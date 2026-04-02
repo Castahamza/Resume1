@@ -61,14 +61,21 @@ export async function POST(request) {
       );
     }
 
-    const priceId =
+    const rawPriceId =
       plan === "pro_monthly"
         ? process.env.STRIPE_PRICE_PRO_MONTHLY
         : process.env.STRIPE_PRICE_LIFETIME;
+    const priceId = rawPriceId?.trim() || null;
 
     if (!priceId) {
+      const keyName =
+        plan === "pro_monthly"
+          ? "STRIPE_PRICE_PRO_MONTHLY"
+          : "STRIPE_PRICE_LIFETIME";
       return NextResponse.json(
-        { error: "Stripe Price IDs are not configured on the server." },
+        {
+          error: `Add ${keyName} in Vercel → Environment Variables (value = Stripe Price ID starting with price_), enable Production + Preview, then Redeploy.`,
+        },
         { status: 503 }
       );
     }
@@ -118,8 +125,23 @@ export async function POST(request) {
     return NextResponse.json({ url: session.url });
   } catch (err) {
     console.error("checkout POST error:", err);
+    // Avoid relying on `instanceof Stripe.errors.StripeError` — some bundlers
+    // break that check on Vercel, which hid the real Stripe message.
+    const msg =
+      err &&
+      typeof err === "object" &&
+      typeof err.message === "string" &&
+      err.message.trim() !== ""
+        ? err.message.trim()
+        : null;
+    if (msg) {
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
     return NextResponse.json(
-      { error: "Could not start checkout. Try again later." },
+      {
+        error:
+          "Could not start checkout. Open Vercel → Logs and search for checkout POST error.",
+      },
       { status: 500 }
     );
   }

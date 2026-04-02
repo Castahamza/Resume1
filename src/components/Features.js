@@ -50,18 +50,18 @@ export default function Features() {
   return (
     <section
       id="features"
-      className="border-b border-slate-200/70 bg-white py-16 md:py-24"
+      className="border-b border-slate-200/70 bg-white py-16 md:py-24 dark:border-slate-800 dark:bg-slate-950"
       aria-labelledby="features-heading"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl">
           <h2
             id="features-heading"
-            className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+            className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white"
           >
             Everything you need to stand out
           </h2>
-          <p className="mt-4 text-lg text-slate-600">
+          <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
             Built for job seekers who want speed, polish, and control—without
             sacrificing quality.
           </p>
@@ -71,15 +71,15 @@ export default function Features() {
           {items.map(({ icon: Icon, title, description }) => (
             <li
               key={title}
-              className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 transition hover:border-blue-200 hover:bg-blue-50/30"
+              className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 transition hover:border-blue-200 hover:bg-blue-50/30 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:border-blue-500/40 dark:hover:bg-blue-950/20"
             >
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
                 <Icon className="h-5 w-5" aria-hidden />
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-slate-900">
+              <h3 className="mt-4 text-lg font-semibold text-slate-900 dark:text-white">
                 {title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                 {description}
               </p>
             </li>

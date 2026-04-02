@@ -14,6 +14,7 @@ import {
   ScanSearch,
 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { planBadgeLabel } from "@/lib/checkPlan";
 
 const navItems = [
@@ -29,9 +30,10 @@ const navItems = [
 
 function planBadgeClasses(plan) {
   if (plan === "lifetime")
-    return "bg-violet-100 text-violet-900 ring-violet-200";
-  if (plan === "pro") return "bg-blue-100 text-blue-900 ring-blue-200";
-  return "bg-slate-100 text-slate-700 ring-slate-200";
+    return "bg-violet-100 text-violet-900 ring-violet-200 dark:bg-violet-950 dark:text-violet-200 dark:ring-violet-800";
+  if (plan === "pro")
+    return "bg-blue-100 text-blue-900 ring-blue-200 dark:bg-blue-950 dark:text-blue-200 dark:ring-blue-800";
+  return "bg-slate-100 text-slate-700 ring-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:ring-slate-600";
 }
 
 /**
@@ -64,44 +66,47 @@ export function DashboardShell({
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
       {sidebarOpen ? (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-slate-900/40 md:hidden"
+          className="fixed inset-0 z-40 bg-slate-900/40 dark:bg-black/60 md:hidden"
           aria-label="Close menu"
           onClick={() => setSidebarOpen(false)}
         />
       ) : null}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-out md:relative md:z-0 md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-out dark:border-slate-800 dark:bg-slate-950 md:relative md:z-0 md:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-        <div className="flex h-16 items-center justify-between gap-2 border-b border-slate-200 px-4">
+        <div className="flex h-16 items-center justify-between gap-2 border-b border-slate-200 px-3 dark:border-slate-800">
           <Link
             href="/"
-            className="flex items-center gap-2 font-semibold tracking-tight text-slate-900"
+            className="flex min-w-0 items-center gap-2 font-semibold tracking-tight text-slate-900 dark:text-white"
           >
             <BrandLogo size={36} />
-            ResumeAI
+            <span className="truncate">ResumeAI</span>
           </Link>
-          <button
-            type="button"
-            className="rounded-lg p-2 text-slate-600 md:hidden"
-            onClick={() => setSidebarOpen(false)}
-            aria-label="Close sidebar"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex shrink-0 items-center gap-1">
+            <ThemeToggle />
+            <button
+              type="button"
+              className="rounded-lg p-2 text-slate-600 dark:text-slate-300 md:hidden"
+              onClick={() => setSidebarOpen(false)}
+              aria-label="Close sidebar"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="border-b border-slate-100 px-3 py-3">
-          <p className="truncate px-3 text-xs font-medium text-slate-500">
+        <div className="border-b border-slate-100 px-3 py-3 dark:border-slate-800">
+          <p className="truncate px-3 text-xs font-medium text-slate-500 dark:text-slate-400">
             Signed in
           </p>
-          <p className="truncate px-3 text-sm font-semibold text-slate-900">
+          <p className="truncate px-3 text-sm font-semibold text-slate-900 dark:text-white">
             {user.email}
           </p>
           <div className="mt-2 px-3">
@@ -125,8 +130,8 @@ export function DashboardShell({
                 href={href}
                 className={
                   active
-                    ? "flex items-center gap-3 rounded-lg bg-blue-50 px-3 py-2.5 text-sm font-semibold text-blue-800"
-                    : "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                    ? "flex items-center gap-3 rounded-lg bg-blue-50 px-3 py-2.5 text-sm font-semibold text-blue-800 dark:bg-blue-950/60 dark:text-blue-200"
+                    : "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900"
                 }
                 onClick={() => setSidebarOpen(false)}
               >
@@ -137,12 +142,12 @@ export function DashboardShell({
           })}
         </nav>
 
-        <div className="border-t border-slate-200 p-3">
+        <div className="border-t border-slate-200 p-3 dark:border-slate-800">
           <button
             type="button"
             onClick={handleLogout}
             disabled={logoutLoading}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:opacity-60 dark:text-slate-300 dark:hover:bg-slate-900"
           >
             {logoutLoading ? (
               <Loader2 className="h-5 w-5 shrink-0 animate-spin" aria-hidden />
@@ -155,16 +160,19 @@ export function DashboardShell({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 items-center gap-3 border-b border-slate-200 bg-white px-4 md:hidden">
+        <header className="flex h-16 items-center gap-3 border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-950 md:hidden">
           <button
             type="button"
-            className="rounded-lg p-2 text-slate-700"
+            className="rounded-lg p-2 text-slate-700 dark:text-slate-200"
             onClick={() => setSidebarOpen(true)}
             aria-label="Open menu"
           >
             <Menu className="h-6 w-6" />
           </button>
-          <span className="font-semibold text-slate-900">{headerTitle}</span>
+          <span className="min-w-0 flex-1 truncate font-semibold text-slate-900 dark:text-white">
+            {headerTitle}
+          </span>
+          <ThemeToggle />
         </header>
 
         {children}

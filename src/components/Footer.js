@@ -30,7 +30,7 @@ const columns = [
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300">
+    <footer className="bg-slate-900 text-slate-300 dark:bg-black dark:text-slate-400">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
           <div className="max-w-xs">

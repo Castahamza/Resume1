@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 import { BrandLogo } from "@/components/BrandLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import toast from "react-hot-toast";
 
 function safeRedirectPath(next) {
@@ -55,25 +56,26 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-blue-50/90 via-white to-slate-50">
-      <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center px-4 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-blue-50/90 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="flex items-center gap-2 font-semibold tracking-tight text-slate-900"
+            className="flex items-center gap-2 font-semibold tracking-tight text-slate-900 dark:text-white"
           >
             <BrandLogo size={36} />
             ResumeAI
           </Link>
+          <ThemeToggle />
         </div>
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-4 py-12 sm:py-16">
-        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             Sign in
           </h1>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             Welcome back. Enter your credentials to continue.
           </p>
 
@@ -81,7 +83,7 @@ function LoginForm() {
             <div>
               <label
                 htmlFor="login-email"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 Email
               </label>
@@ -94,14 +96,14 @@ function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
-                className="mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:text-slate-500"
+                className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:disabled:bg-slate-900"
                 placeholder="you@example.com"
               />
             </div>
             <div>
               <label
                 htmlFor="login-password"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 Password
               </label>
@@ -114,7 +116,7 @@ function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
-                className="mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:text-slate-500"
+                className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:disabled:bg-slate-900"
                 placeholder="••••••••"
               />
             </div>
@@ -144,11 +146,11 @@ function LoginForm() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-slate-600">
+          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
             Don&apos;t have an account?{" "}
             <Link
               href="/signup"
-              className="font-semibold text-blue-600 hover:text-blue-700"
+              className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >
               Create one
             </Link>
@@ -161,8 +163,8 @@ function LoginForm() {
 
 function LoginFallback() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50">
-      <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden />
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" aria-hidden />
     </div>
   );
 }

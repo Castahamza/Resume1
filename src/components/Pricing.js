@@ -2,61 +2,39 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 
 const plans = [
   {
-    name: "Free",
-    price: "$0",
-    period: "",
-    description: "Get started and explore core tools at no cost.",
-    features: [
-      "1 resume template",
-      "Basic AI suggestions",
-      "PDF export (watermarked)",
-      "Local draft history",
-    ],
-    cta: "Get started",
+    kind: "light",
+    topLabel: "No card required",
+    topDescription:
+      "Get a feel for how it works. No payment required.",
+    planTitle: "Free",
     checkoutPlan: null,
     ctaHref: "/signup",
-    highlighted: false,
   },
   {
-    name: "Pro",
-    price: "$29",
-    period: "/month",
-    description: "Full power for active job seekers.",
-    features: [
-      "Unlimited resumes & versions",
-      "Advanced AI rewrites & tone",
-      "All premium templates",
-      "Cloud sync & backup",
-      "Stripe subscription billing",
-      "Priority support",
-    ],
-    cta: "Subscribe",
+    kind: "featured",
+    topLabel: "$29 monthly",
+    topDescription:
+      "Full ResumeAI access: unlimited resumes, premium templates, and AI-assisted edits.",
+    planTitle: "Pro",
     checkoutPlan: "pro_monthly",
-    highlighted: true,
   },
   {
-    name: "Lifetime",
-    price: "$149",
-    period: " one-time",
-    description: "Pay once, own Pro forever.",
-    features: [
-      "Everything in Pro",
-      "Lifetime updates included",
-      "No recurring fees",
-      "Best for career-long use",
-    ],
-    cta: "Buy lifetime",
+    kind: "light",
+    topLabel: "$149 one-time",
+    topDescription:
+      "Everything in Pro with a single payment—no recurring fees.",
+    planTitle: "Lifetime",
     checkoutPlan: "lifetime",
-    highlighted: false,
+    guarantee: true,
   },
 ];
 
-function PlanCta({ plan }) {
+function PlanCta({ plan, onDark }) {
   const [loading, setLoading] = useState(false);
 
   async function startCheckout() {
@@ -87,7 +65,9 @@ function PlanCta({ plan }) {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        window.alert(typeof data.error === "string" ? data.error : "Checkout failed.");
+        window.alert(
+          typeof data.error === "string" ? data.error : "Checkout failed."
+        );
         return;
       }
 
@@ -101,6 +81,9 @@ function PlanCta({ plan }) {
     }
   }
 
+  const baseBtn =
+    "mt-8 inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60";
+
   if (plan.checkoutPlan) {
     return (
       <button
@@ -108,15 +91,15 @@ function PlanCta({ plan }) {
         onClick={startCheckout}
         disabled={loading}
         className={
-          plan.highlighted
-            ? "mt-8 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60"
-            : "mt-8 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60"
+          onDark
+            ? `${baseBtn} bg-sky-500 text-white hover:bg-sky-400 focus-visible:outline-white`
+            : `${baseBtn} border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 focus-visible:outline-blue-600 dark:border-slate-600 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800`
         }
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
         ) : null}
-        {plan.cta}
+        Get started
       </button>
     );
   }
@@ -124,9 +107,9 @@ function PlanCta({ plan }) {
   return (
     <Link
       href={plan.ctaHref}
-      className="mt-8 inline-flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+      className={`${baseBtn} border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-slate-600 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800`}
     >
-      {plan.cta}
+      Get started
     </Link>
   );
 }
@@ -135,64 +118,82 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="border-b border-slate-200/70 bg-gradient-to-b from-slate-50/80 to-white py-16 md:py-24"
+      className="border-b border-slate-200/70 bg-white py-16 md:py-24 dark:border-slate-800 dark:bg-slate-950"
       aria-labelledby="pricing-heading"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
+        <header className="mx-auto max-w-3xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
+            Fair pricing
+          </p>
           <h2
             id="pricing-heading"
-            className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+            className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl md:text-[2.25rem] md:leading-tight dark:text-white"
           >
-            Simple, transparent pricing
+            Choose the plan that fits your job search
           </h2>
-          <p className="mt-4 text-lg text-slate-600">
-            Choose a plan that fits your search. Upgrade or go lifetime when
-            you&apos;re ready—secure checkout powered by Stripe.
+          <p className="mt-4 text-base text-slate-600 sm:text-lg dark:text-slate-400">
+            Upgrade anytime—secure checkout with Stripe. Cancel Pro whenever
+            you need; Lifetime is yours to keep.
           </p>
-        </div>
+        </header>
 
-        <div className="mt-14 grid gap-8 lg:grid-cols-3 lg:items-start">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={
-                plan.highlighted
-                  ? "relative flex flex-col rounded-2xl border-2 border-blue-600 bg-white p-8 shadow-lg shadow-blue-600/10 ring-1 ring-blue-600/20 lg:z-10 lg:scale-105"
-                  : "flex flex-col rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
-              }
-            >
-              {plan.highlighted ? (
-                <p className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
-                  Popular
+        <div className="mt-14 grid gap-6 lg:grid-cols-3 lg:gap-5 lg:items-stretch">
+          {plans.map((plan) =>
+            plan.kind === "featured" ? (
+              <div
+                key={plan.planTitle}
+                className="flex flex-col rounded-2xl bg-gradient-to-b from-blue-900 via-indigo-900 to-violet-950 p-8 shadow-lg shadow-indigo-900/25 ring-1 ring-white/10 lg:order-none lg:scale-[1.02] lg:z-10"
+              >
+                <p className="text-base font-bold capitalize text-white">
+                  {plan.topLabel}
                 </p>
-              ) : null}
-              <h3 className="text-lg font-semibold text-slate-900">
-                {plan.name}
-              </h3>
-              <p className="mt-2 text-sm text-slate-600">{plan.description}</p>
-              <p className="mt-6 flex items-baseline gap-1">
-                <span className="text-4xl font-bold tracking-tight text-slate-900">
-                  {plan.price}
-                </span>
-                <span className="text-sm font-medium text-slate-500">
-                  {plan.period}
-                </span>
-              </p>
-              <ul className="mt-8 flex flex-1 flex-col gap-3 text-sm text-slate-600">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex gap-2">
-                    <span
-                      className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600"
+                <p className="mt-3 text-sm leading-relaxed text-white/85">
+                  {plan.topDescription}
+                </p>
+                <hr className="mt-6 border-white/25" />
+                <p className="mt-6 text-4xl font-bold tracking-tight text-white sm:text-5xl">
+                  {plan.planTitle}
+                </p>
+                <PlanCta plan={plan} onDark />
+                <p className="mt-5 flex items-center gap-2 text-xs font-medium text-white/90">
+                  <Check
+                    className="h-4 w-4 shrink-0 text-emerald-400"
+                    strokeWidth={2.5}
+                    aria-hidden
+                  />
+                  100% money-back guarantee
+                </p>
+              </div>
+            ) : (
+              <div
+                key={plan.planTitle}
+                className="flex flex-col rounded-2xl border border-slate-200/90 bg-white p-8 shadow-md shadow-slate-200/40 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20"
+              >
+                <p className="text-base font-bold text-slate-900 dark:text-white">
+                  {plan.topLabel}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  {plan.topDescription}
+                </p>
+                <hr className="mt-6 border-slate-200 dark:border-slate-700" />
+                <p className="mt-6 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl dark:text-white">
+                  {plan.planTitle}
+                </p>
+                <PlanCta plan={plan} onDark={false} />
+                {plan.guarantee ? (
+                  <p className="mt-5 flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+                    <Check
+                      className="h-4 w-4 shrink-0 text-emerald-600"
+                      strokeWidth={2.5}
                       aria-hidden
                     />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <PlanCta plan={plan} />
-            </div>
-          ))}
+                    100% money-back guarantee
+                  </p>
+                ) : null}
+              </div>
+            )
+          )}
         </div>
       </div>
     </section>

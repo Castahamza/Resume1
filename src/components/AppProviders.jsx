@@ -1,10 +1,11 @@
 "use client";
 
 import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export function AppProviders({ children }) {
   return (
-    <>
+    <ThemeProvider>
       {children}
       <Toaster
         position="top-center"
@@ -13,7 +14,7 @@ export function AppProviders({ children }) {
         toastOptions={{
           duration: 4000,
           className:
-            "!rounded-lg !border !border-slate-200 !bg-white !text-slate-900 !shadow-lg !px-4 !py-3 !text-sm",
+            "!rounded-lg !border !border-slate-200 !bg-white !text-slate-900 !shadow-lg !px-4 !py-3 !text-sm dark:!border-slate-600 dark:!bg-slate-800 dark:!text-slate-100",
           success: {
             iconTheme: { primary: "#2563eb", secondary: "#ffffff" },
           },
@@ -22,6 +23,6 @@ export function AppProviders({ children }) {
           },
         }}
       />
-    </>
+    </ThemeProvider>
   );
 }

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 import { BrandLogo } from "@/components/BrandLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import toast from "react-hot-toast";
 
 export default function SignupPage() {
@@ -63,25 +64,26 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-blue-50/90 via-white to-slate-50">
-      <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center px-4 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-blue-50/90 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="flex items-center gap-2 font-semibold tracking-tight text-slate-900"
+            className="flex items-center gap-2 font-semibold tracking-tight text-slate-900 dark:text-white"
           >
             <BrandLogo size={36} />
             ResumeAI
           </Link>
+          <ThemeToggle />
         </div>
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-4 py-12 sm:py-16">
-        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             Create your account
           </h1>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             Start building better resumes with ResumeAI.
           </p>
 
@@ -89,7 +91,7 @@ export default function SignupPage() {
             <div>
               <label
                 htmlFor="signup-name"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 Name
               </label>
@@ -102,14 +104,14 @@ export default function SignupPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={loading}
-                className="mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:text-slate-500"
+                className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:disabled:bg-slate-900"
                 placeholder="Jane Doe"
               />
             </div>
             <div>
               <label
                 htmlFor="signup-email"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 Email
               </label>
@@ -122,14 +124,14 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
-                className="mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:text-slate-500"
+                className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:disabled:bg-slate-900"
                 placeholder="you@example.com"
               />
             </div>
             <div>
               <label
                 htmlFor="signup-password"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 Password
               </label>
@@ -143,14 +145,14 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
-                className="mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:text-slate-500"
+                className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:disabled:bg-slate-900"
                 placeholder="At least 6 characters"
               />
             </div>
 
             {error ? (
               <p
-                className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
+                className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-200"
                 role="alert"
               >
                 {error}
@@ -159,7 +161,7 @@ export default function SignupPage() {
 
             {info ? (
               <p
-                className="rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-800"
+                className="rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-800 dark:bg-blue-950/50 dark:text-blue-200"
                 role="status"
               >
                 {info}
@@ -182,11 +184,11 @@ export default function SignupPage() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-slate-600">
+          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
             Already have an account?{" "}
             <Link
               href="/login"
-              className="font-semibold text-blue-600 hover:text-blue-700"
+              className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >
               Sign in
             </Link>
