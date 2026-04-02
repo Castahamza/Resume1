@@ -82,6 +82,25 @@ export async function POST(request) {
       );
     }
 
+    if (priceId.startsWith("prod_")) {
+      return NextResponse.json(
+        {
+          error:
+            "That value is a Product ID (prod_…). Stripe Checkout needs a Price ID: open the product in Stripe → Pricing section → copy the ID that starts with price_. Paste that into Vercel.",
+        },
+        { status: 400 }
+      );
+    }
+    if (!priceId.startsWith("price_")) {
+      return NextResponse.json(
+        {
+          error:
+            "Use a Stripe Price ID (starts with price_) from the product’s Pricing table—not prod_ or anything else.",
+        },
+        { status: 400 }
+      );
+    }
+
     const origin =
       request.headers.get("origin") ||
       process.env.NEXT_PUBLIC_SITE_URL ||
