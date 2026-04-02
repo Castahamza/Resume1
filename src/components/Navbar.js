@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -14,8 +13,6 @@ const navLinks = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-  const isHome = pathname === "/";
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90">
@@ -53,10 +50,11 @@ export default function Navbar() {
           >
             Get started
           </Link>
-          {!isHome ? <ThemeToggle /> : null}
+          <ThemeToggle />
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
           <button
             type="button"
             className="inline-flex items-center justify-center rounded-lg p-2 text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600 dark:text-slate-200"
@@ -100,9 +98,6 @@ export default function Navbar() {
             >
               Get started
             </Link>
-            <div className="flex justify-start pt-2">
-              <ThemeToggle />
-            </div>
           </div>
         </div>
       ) : null}
