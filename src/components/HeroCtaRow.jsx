@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { getSupabase } from "@/lib/supabase";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 function ScoreGauge({ gradId }) {
   return (
@@ -88,12 +89,19 @@ export function HeroCtaRow({ className = "" }) {
     <div
       className={`flex flex-col gap-4 sm:flex-row sm:items-stretch sm:gap-[18px] ${className}`.trim()}
     >
-      <Link
-        href="/signup"
-        className={`group inline-flex shrink-0 items-center justify-center rounded-xl bg-blue-600 px-7 text-center text-base font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 ${ctaHeight} w-full sm:w-[min(46%,14.5rem)] sm:min-w-[13.5rem]`}
-      >
-        Get started—it&apos;s free
-      </Link>
+      <div className="flex w-full flex-row items-stretch gap-3 sm:w-auto sm:shrink-0 sm:gap-[18px]">
+        <Link
+          href="/signup"
+          className={`group inline-flex shrink-0 flex-1 items-center justify-center rounded-xl bg-blue-600 px-7 text-center text-base font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 ${ctaHeight} sm:w-[min(46%,14.5rem)] sm:min-w-[13.5rem] sm:flex-initial`}
+        >
+          Get started—it&apos;s free
+        </Link>
+        <div
+          className={`flex shrink-0 items-center justify-center ${ctaHeight}`}
+        >
+          <ThemeToggle />
+        </div>
+      </div>
 
       <button
         type="button"
