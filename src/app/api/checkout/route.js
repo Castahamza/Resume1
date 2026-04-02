@@ -3,6 +3,8 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
+/** Stripe Node SDK is not supported on Edge — force Node on Vercel. */
+export const runtime = "nodejs";
 
 export async function POST(request) {
   try {

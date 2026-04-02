@@ -53,29 +53,50 @@ function PlanCta({ plan, onDark }) {
         return;
       }
 
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ plan: plan.checkoutPlan }),
-      });
+      const res = await fetch(
+        `${window.location.origin}/api/checkout`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ plan: plan.checkoutPlan }),
+        }
+      );
 
-      const data = await res.json().catch(() => ({}));
+      const raw = await res.text();
+      let data = {};
+      if (raw) {
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          window.alert(
+            `Checkout HTTP ${res.status}. Server did not return JSON. First part of response:\n${raw.slice(0, 280)}`
+          );
+          return;
+        }
+      }
 
       if (!res.ok) {
-        window.alert(
-          typeof data.error === "string" ? data.error : "Checkout failed."
-        );
+        const msg =
+          typeof data.error === "string"
+            ? data.error
+            : `Checkout failed (HTTP ${res.status}).`;
+        window.alert(msg);
         return;
       }
 
       if (data.url) {
         window.location.href = data.url;
+        return;
       }
-    } catch {
-      window.alert("Could not start checkout. Try again.");
+
+      window.alert("Checkout started but no redirect URL returned.");
+    } catch (e) {
+      window.alert(
+        e instanceof Error ? e.message : "Could not start checkout. Try again."
+      );
     } finally {
       setLoading(false);
     }
