@@ -3,19 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  FilePenLine,
-  Plus,
-  LayoutGrid,
-  Loader2,
-  Trash2,
-} from "lucide-react";
+import { Plus, LayoutGrid, Loader2, Trash2 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 import { ResumeThumbnail } from "@/components/templates/ResumeThumbnail";
 import { getTemplateLabel } from "@/components/templates";
 import { DashboardShell } from "@/components/DashboardShell";
 import { UpgradeModal } from "@/components/UpgradeModal";
-import { isPaidPlan, FREE_MAX_RESUMES } from "@/lib/checkPlan";
+import {
+  isPaidPlan,
+  FREE_MAX_RESUMES,
+  FREE_MONTHLY_AI_LIMIT,
+} from "@/lib/checkPlan";
+import { DashboardDocPickerOverlay } from "@/components/DashboardDocPickerOverlay";
 import {
   DashboardSkeleton,
   ResumeListSkeleton,
@@ -33,6 +32,7 @@ export default function DashboardPage() {
   const [resumesError, setResumesError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [docPickerOpen, setDocPickerOpen] = useState(false);
 
   useEffect(() => {
     const supabase = getSupabase();
@@ -117,6 +117,46 @@ export default function DashboardPage() {
     };
   }, [user]);
 
+  useEffect(() => {
+    if (authLoading || !user || resumesLoading) return;
+    try {
+      if (!window.sessionStorage.getItem("zoru_doc_picker_dismissed")) {
+        setDocPickerOpen(true);
+      }
+    } catch {
+      setDocPickerOpen(true);
+    }
+  }, [authLoading, user, resumesLoading]);
+
+  function dismissDocPicker() {
+    try {
+      window.sessionStorage.setItem("zoru_doc_picker_dismissed", "1");
+    } catch {
+      /* ignore */
+    }
+    setDocPickerOpen(false);
+  }
+
+  function pickerChooseResume() {
+    if (!isPaidPlan(plan) && resumes.length >= FREE_MAX_RESUMES) {
+      dismissDocPicker();
+      setUpgradeOpen(true);
+      return;
+    }
+    dismissDocPicker();
+    router.push("/dashboard/resume/new");
+  }
+
+  function pickerChooseCoverLetter() {
+    dismissDocPicker();
+    router.push("/dashboard/cover-letter");
+  }
+
+  function pickerChooseResignation() {
+    dismissDocPicker();
+    toast("Resignation letters are coming soon.", { icon: "📄" });
+  }
+
   async function handleDeleteResume(e, resumeId) {
     e.preventDefault();
     e.stopPropagation();
@@ -188,26 +228,57 @@ export default function DashboardPage() {
   const atResumeLimit =
     !isPaidPlan(plan) && resumes.length >= FREE_MAX_RESUMES;
 
+  const pickerFirstName =
+    user.user_metadata?.full_name?.trim()?.split?.(/\s+/)?.[0] || "";
+
   return (
-    <DashboardShell user={user} plan={plan} onLogout={handleLogout}>
+    <DashboardShell
+      user={user}
+      plan={plan}
+      onLogout={handleLogout}
+      onNewResumeClick={handleCreateClick}
+      usageSummary={{
+        resumeCount: resumes.length,
+        resumeLimit: isPaidPlan(plan) ? null : FREE_MAX_RESUMES,
+        aiUsed: 0,
+        aiLimit: isPaidPlan(plan) ? 0 : FREE_MONTHLY_AI_LIMIT,
+      }}
+      showUpgradeButton={!isPaidPlan(plan)}
+      onUpgradeClick={() => setUpgradeOpen(true)}
+    >
       <UpgradeModal
         open={upgradeOpen}
         onClose={() => setUpgradeOpen(false)}
         title="Upgrade to create more resumes"
         message={`Free accounts include ${FREE_MAX_RESUMES} resume. Upgrade to Pro or Lifetime for unlimited resumes and every template.`}
       />
-      <main className="flex-1 px-4 py-8 sm:px-6 lg:px-10 dark:text-slate-100">
+      <DashboardDocPickerOverlay
+        open={docPickerOpen}
+        firstName={pickerFirstName}
+        onClose={dismissDocPicker}
+        onResume={pickerChooseResume}
+        onCoverLetter={pickerChooseCoverLetter}
+        onResignation={pickerChooseResignation}
+      />
+      <div
+        className={
+          docPickerOpen
+            ? "pointer-events-none blur-[1.5px] transition-[filter]"
+            : ""
+        }
+      >
+      <main className="flex-1 px-4 py-8 sm:px-6 lg:px-10 text-slate-200">
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
+              <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
                 Welcome back, {displayName}
               </h1>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 sm:text-base">
-                <span className="font-medium text-slate-800 dark:text-slate-200">
+              <p className="mt-2 text-sm text-slate-400 sm:text-base">
+                <span className="font-medium text-slate-300">
                   Signed in as
                 </span>{" "}
-                <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                <span className="rounded-md bg-[#21262d] px-2 py-0.5 font-mono text-sm text-slate-200">
                   {user.email}
                 </span>
               </p>
@@ -236,12 +307,12 @@ export default function DashboardPage() {
           <section className="mt-10" aria-labelledby="resumes-heading">
             <div className="mb-4 flex items-center gap-2">
               <LayoutGrid
-                className="h-5 w-5 text-slate-500 dark:text-slate-400"
+                className="h-5 w-5 text-slate-500"
                 aria-hidden
               />
               <h2
                 id="resumes-heading"
-                className="text-lg font-semibold text-slate-900 dark:text-white"
+                className="text-lg font-semibold text-white"
               >
                 Your resumes
               </h2>
@@ -249,7 +320,7 @@ export default function DashboardPage() {
 
             {resumesError ? (
               <p
-                className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 dark:bg-red-950/40 dark:text-red-200"
+                className="rounded-lg bg-red-950/50 px-4 py-3 text-sm text-red-200 ring-1 ring-red-900/60"
                 role="alert"
               >
                 {resumesError}
@@ -259,9 +330,9 @@ export default function DashboardPage() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {resumesLoading ? (
                 <div className="col-span-full space-y-4">
-                  <p className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
+                  <p className="flex items-center gap-2 text-sm font-medium text-slate-400">
                     <Loader2
-                      className="h-4 w-4 shrink-0 animate-spin text-blue-600"
+                      className="h-4 w-4 shrink-0 animate-spin text-sky-400"
                       aria-hidden
                     />
                     Loading your resumes…
@@ -269,12 +340,12 @@ export default function DashboardPage() {
                   <ResumeListSkeleton count={6} />
                 </div>
               ) : resumes.length === 0 ? (
-                <div className="col-span-full flex min-h-[280px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-gradient-to-b from-white to-slate-50/80 px-6 py-12 text-center shadow-sm dark:border-slate-700 dark:from-slate-900 dark:to-slate-950">
+                <div className="col-span-full flex min-h-[280px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#30363d] bg-[#161b22] px-6 py-12 text-center shadow-inner">
                   <EmptyResumeIllustration />
-                  <p className="mt-6 text-lg font-semibold text-slate-900 dark:text-white">
+                  <p className="mt-6 text-lg font-semibold text-white">
                     No resumes yet
                   </p>
-                  <p className="mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+                  <p className="mt-2 max-w-md text-sm text-slate-400">
                     Create your first ATS-friendly resume with AI-assisted
                     bullets, templates, and PDF export.
                   </p>
@@ -292,17 +363,17 @@ export default function DashboardPage() {
                   <Link
                     key={r.id}
                     href={`/dashboard/resume/${r.id}`}
-                    className="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-blue-500/50 sm:p-5"
+                    className="group relative flex flex-col rounded-2xl border border-[#30363d] bg-[#161b22] p-4 text-left shadow-sm transition hover:border-sky-500/40 hover:shadow-lg sm:p-5"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="line-clamp-2 pr-8 font-semibold text-slate-900 dark:text-white">
+                      <h3 className="line-clamp-2 pr-8 font-semibold text-white">
                         {r.title || "Untitled resume"}
                       </h3>
                       <button
                         type="button"
                         onClick={(e) => handleDeleteResume(e, r.id)}
                         disabled={deletingId === r.id}
-                        className="absolute right-3 top-3 rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-950/50 dark:hover:text-red-400"
+                        className="absolute right-3 top-3 rounded-lg p-2 text-slate-500 transition hover:bg-red-950/50 hover:text-red-400 disabled:opacity-50"
                         aria-label={`Delete ${r.title || "resume"}`}
                       >
                         {deletingId === r.id ? (
@@ -321,17 +392,17 @@ export default function DashboardPage() {
                         content={r.content}
                       />
                     </div>
-                    <p className="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <p className="mt-2 text-xs font-semibold text-slate-300">
                       {getTemplateLabel(r.template)} template
                     </p>
-                    <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
-                      <span className="font-medium text-slate-700 dark:text-slate-300">
+                    <p className="mt-3 text-sm text-slate-400">
+                      <span className="font-medium text-slate-300">
                         Last updated
                       </span>
                       <br />
                       {formatResumeDate(r.updated_at)}
                     </p>
-                    <span className="mt-3 text-xs font-semibold text-blue-600 group-hover:text-blue-700 dark:text-blue-400 dark:group-hover:text-blue-300">
+                    <span className="mt-3 text-xs font-semibold text-sky-400 group-hover:text-sky-300">
                       Edit →
                     </span>
                   </Link>
@@ -341,6 +412,7 @@ export default function DashboardPage() {
           </section>
         </div>
       </main>
+      </div>
     </DashboardShell>
   );
 }
