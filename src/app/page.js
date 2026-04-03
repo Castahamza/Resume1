@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import StatsSection from "@/components/StatsSection";
 import Features from "@/components/Features";
 import Pricing from "@/components/Pricing";
 import FaqSection from "@/components/FaqSection";
@@ -17,6 +18,7 @@ export default function Home() {
       <Navbar />
       <main className="min-h-0 flex-1 bg-white text-slate-900">
         <Hero />
+        <StatsSection />
         <Features />
         <Pricing />
         <FaqSection />
