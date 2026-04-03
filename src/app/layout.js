@@ -20,13 +20,13 @@ const siteUrl =
 export const metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "ResumeAI — AI resume builder",
-    template: "%s · ResumeAI",
+    default: "Zoru — AI resume builder",
+    template: "%s · Zoru",
   },
   description:
     "Build ATS-friendly resumes with AI assistance, keyword scanning, cover letters, and professional PDF export. Plans for every job search.",
   openGraph: {
-    title: "ResumeAI — AI resume builder",
+    title: "Zoru — AI resume builder",
     description:
       "Build ATS-friendly resumes with AI assistance and professional PDF export.",
     type: "website",

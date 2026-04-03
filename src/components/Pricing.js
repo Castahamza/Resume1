@@ -19,7 +19,7 @@ const plans = [
     kind: "featured",
     topLabel: "$29 monthly",
     topDescription:
-      "Full ResumeAI access: unlimited resumes, premium templates, and AI-assisted edits.",
+      "Full Zoru access: unlimited resumes, premium templates, and AI-assisted edits.",
     planTitle: "Pro",
     checkoutPlan: "pro_monthly",
   },

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Page not found",
-  description: "The page you requested could not be found on ResumeAI.",
+  description: "The page you requested could not be found on Zoru.",
 };
 
 export default function NotFound() {

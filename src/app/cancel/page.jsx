@@ -4,7 +4,7 @@ import { XCircle } from "lucide-react";
 export const metadata = {
   title: "Checkout cancelled",
   description:
-    "Your Stripe checkout was cancelled. No charge was made on ResumeAI.",
+    "Your Stripe checkout was cancelled. No charge was made on Zoru.",
 };
 
 export default function CancelPage() {

@@ -8,7 +8,7 @@ export default function StatsSection() {
   return (
     <section
       className="border-b border-slate-200/70 bg-slate-50 py-12 md:py-16 dark:border-slate-800 dark:bg-slate-900/40"
-      aria-label="ResumeAI at a glance"
+      aria-label="Zoru at a glance"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <ul className="grid gap-5 sm:grid-cols-3 sm:gap-6">

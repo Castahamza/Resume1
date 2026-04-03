@@ -33,7 +33,7 @@ function ScoreGauge({ gradId }) {
           0
         </span>
         <span className="mt-0.5 text-[0.55rem] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-          ResumeAI score
+          Zoru score
         </span>
       </div>
     </div>

@@ -13,7 +13,6 @@ import {
   Loader2,
   ScanSearch,
 } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { planBadgeLabel } from "@/lib/checkPlan";
 
@@ -84,10 +83,9 @@ export function DashboardShell({
         <div className="flex h-16 items-center justify-between gap-2 border-b border-slate-200 px-3 dark:border-slate-800">
           <Link
             href="/"
-            className="flex min-w-0 items-center gap-2 font-semibold tracking-tight text-slate-900 dark:text-white"
+            className="min-w-0 truncate text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
           >
-            <BrandLogo size={36} />
-            <span className="truncate">ResumeAI</span>
+            Zoru
           </Link>
           <div className="flex shrink-0 items-center gap-1">
             <ThemeToggle />

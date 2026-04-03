@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 export const metadata = {
   title: "AI resume builder",
   description:
-    "ResumeAI helps you build ATS-friendly resumes with AI bullet points, keyword scanning, cover letters, and PDF export.",
+    "Zoru helps you build ATS-friendly resumes with AI bullet points, keyword scanning, cover letters, and PDF export.",
 };
 
 export default function Home() {

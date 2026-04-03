@@ -4,7 +4,7 @@ import { CheckCircle2 } from "lucide-react";
 export const metadata = {
   title: "Payment successful",
   description:
-    "Your ResumeAI payment was processed. Return to the app to use your upgraded plan.",
+    "Your Zoru payment was processed. Return to the app to use your upgraded plan.",
 };
 
 export default function SuccessPage() {

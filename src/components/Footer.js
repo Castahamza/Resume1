@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { BrandLogo } from "@/components/BrandLogo";
 
 const columns = [
   {
@@ -36,10 +35,9 @@ export default function Footer() {
           <div className="max-w-xs">
             <Link
               href="/"
-              className="flex items-center gap-2 font-semibold tracking-tight text-white"
+              className="text-lg font-semibold tracking-tight text-white"
             >
-              <BrandLogo size={36} />
-              ResumeAI
+              Zoru
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-slate-400">
               The modern way to build resumes with AI, cloud sync, and
@@ -70,7 +68,7 @@ export default function Footer() {
         </div>
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-slate-800 pt-8 sm:flex-row sm:items-center">
           <p className="text-sm text-slate-500">
-            © 2026 ResumeAI. All rights reserved.
+            © 2026 Zoru. All rights reserved.
           </p>
           <div className="flex gap-4 text-sm text-slate-500" aria-label="Social">
             <a href="#" className="hover:text-white">

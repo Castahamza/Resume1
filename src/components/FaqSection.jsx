@@ -20,7 +20,7 @@ const FAQ_TABS = [
         a: (
           <>
             Most roles benefit from a clean,{" "}
-            <Accent>single-column layout</Accent> with clear headings. ResumeAI
+            <Accent>single-column layout</Accent> with clear headings. Zoru
             templates prioritize <Accent>ATS compatibility</Accent> first—then
             you can pick the style that matches your field, from minimal to
             slightly more structured.
@@ -60,10 +60,10 @@ const FAQ_TABS = [
         q: "Can I export my resume to Word or Google Docs?",
         a: (
           <>
-            You can <Accent>export a polished PDF</Accent> from ResumeAI for
+            You can <Accent>export a polished PDF</Accent> from Zoru for
             applications. For Word or Google Docs, copy sections from the editor
             or upload a <Accent>.doc / .docx</Accent> file to import and refine
-            inside ResumeAI—then export PDF when you&apos;re ready to submit.
+            inside Zoru—then export PDF when you&apos;re ready to submit.
           </>
         ),
       },

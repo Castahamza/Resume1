@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 export const metadata = {
   title: "Blog",
   description:
-    "Resume tips, ATS guidance, and job-search advice from ResumeAI. New articles coming soon.",
+    "Resume tips, ATS guidance, and job-search advice from Zoru. New articles coming soon.",
 };
 
 export default function BlogPage() {

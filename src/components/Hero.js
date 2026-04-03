@@ -48,7 +48,7 @@ export default function Hero() {
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-            ResumeAI helps you draft ATS-friendly content, sync across devices,
+              Zoru helps you draft ATS-friendly content, sync across devices,
             and export polished PDFs—so you can focus on the roles you want,
             not formatting headaches.
           </p>

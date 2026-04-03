@@ -1,7 +1,7 @@
 export const metadata = {
   title: "Dashboard",
   description:
-    "Manage resumes, cover letters, keyword scans, and account settings in your ResumeAI workspace.",
+    "Manage resumes, cover letters, keyword scans, and account settings in your Zoru workspace.",
 };
 
 export default function DashboardGroupLayout({ children }) {

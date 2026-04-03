@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
-import { BrandLogo } from "@/components/BrandLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import toast from "react-hot-toast";
 
@@ -61,10 +60,9 @@ function LoginForm() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="flex items-center gap-2 font-semibold tracking-tight text-slate-900 dark:text-white"
+            className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
           >
-            <BrandLogo size={36} />
-            ResumeAI
+            Zoru
           </Link>
           <ThemeToggle />
         </div>

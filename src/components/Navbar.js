@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navLinks = [
@@ -23,10 +22,9 @@ export default function Navbar() {
       >
         <Link
           href="/"
-          className="flex items-center gap-2 font-semibold tracking-tight text-slate-900 dark:text-white"
+          className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
         >
-          <BrandLogo size={36} />
-          ResumeAI
+          Zoru
         </Link>
 
         <div className="hidden md:flex md:items-center md:gap-5">

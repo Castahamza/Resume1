@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
-import { BrandLogo } from "@/components/BrandLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import toast from "react-hot-toast";
 
@@ -43,7 +42,7 @@ export default function SignupPage() {
       }
 
       if (data.session) {
-        toast.success("Welcome to ResumeAI!");
+        toast.success("Welcome to Zoru!");
         router.push("/dashboard");
         router.refresh();
         return;
@@ -69,10 +68,9 @@ export default function SignupPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="flex items-center gap-2 font-semibold tracking-tight text-slate-900 dark:text-white"
+            className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
           >
-            <BrandLogo size={36} />
-            ResumeAI
+            Zoru
           </Link>
           <ThemeToggle />
         </div>
@@ -84,7 +82,7 @@ export default function SignupPage() {
             Create your account
           </h1>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            Start building better resumes with ResumeAI.
+            Start building better resumes with Zoru.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
