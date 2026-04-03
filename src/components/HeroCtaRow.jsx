@@ -86,7 +86,7 @@ export function HeroCtaRow({ className = "" }) {
 
   return (
     <div
-      className={`flex flex-col gap-4 sm:flex-row sm:items-stretch sm:gap-[18px] ${className}`.trim()}
+      className={`flex flex-col gap-4 sm:flex-row sm:items-stretch sm:justify-start sm:gap-[18px] ${className}`.trim()}
     >
       <Link
         href="/signup"
@@ -112,7 +112,7 @@ export function HeroCtaRow({ className = "" }) {
           setDragOver(false);
           onPick(e.dataTransfer?.files);
         }}
-        className={`flex flex-1 cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed px-4 py-3 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-5 ${ctaHeight} ${
+        className={`flex w-full cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed px-4 py-3 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:w-fit sm:max-w-full sm:shrink-0 sm:px-5 ${ctaHeight} ${
           dragOver
             ? "border-blue-400 bg-blue-50 dark:border-blue-500 dark:bg-blue-950/40"
             : "border-slate-300 bg-white hover:border-slate-400 hover:bg-slate-50/90 dark:border-slate-500 dark:bg-slate-950 dark:hover:border-slate-400 dark:hover:bg-slate-900/80"
@@ -129,7 +129,7 @@ export function HeroCtaRow({ className = "" }) {
           }}
         />
         <ScoreGauge gradId={gradId} />
-        <div className="min-w-0 flex-1 py-0.5">
+        <div className="min-w-0 shrink py-0.5 sm:pr-1">
           <p className="text-base font-semibold text-slate-900 dark:text-white">
             Import your resume
           </p>
