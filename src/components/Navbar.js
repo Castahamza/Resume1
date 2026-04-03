@@ -7,8 +7,9 @@ import { BrandLogo } from "@/components/BrandLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navLinks = [
-  { href: "#features", label: "Features" },
-  { href: "#pricing", label: "Pricing" },
+  { href: "/#features", label: "Features" },
+  { href: "/#pricing", label: "Pricing" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export default function Navbar() {
@@ -30,13 +31,13 @@ export default function Navbar() {
 
         <div className="hidden md:flex md:items-center md:gap-5">
           {navLinks.map(({ href, label }) => (
-            <a
+            <Link
               key={href}
               href={href}
               className="rounded text-sm font-medium text-slate-600 transition hover:text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-blue-400"
             >
               {label}
-            </a>
+            </Link>
           ))}
           <Link
             href="/login"
@@ -75,14 +76,14 @@ export default function Navbar() {
         >
           <div className="flex flex-col gap-3">
             {navLinks.map(({ href, label }) => (
-              <a
+              <Link
                 key={href}
                 href={href}
                 className="py-2 text-sm font-medium text-slate-700 dark:text-slate-300"
                 onClick={() => setOpen(false)}
               >
                 {label}
-              </a>
+              </Link>
             ))}
             <Link
               href="/login"
