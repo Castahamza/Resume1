@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import Pricing from "@/components/Pricing";
+import FaqSection from "@/components/FaqSection";
 import Footer from "@/components/Footer";
 
 export const metadata = {
@@ -18,6 +19,7 @@ export default function Home() {
         <Hero />
         <Features />
         <Pricing />
+        <FaqSection />
       </main>
       <Footer />
     </>
