@@ -91,6 +91,23 @@ function resolveModernColorValue(originalDoc, prop, val) {
   }
 }
 
+function fallbackColorForPdfProp(prop) {
+  if (prop === "color" || prop === "-webkit-text-fill-color") return "#0f172a";
+  if (prop === "background-color") return "#ffffff";
+  if (
+    prop.endsWith("-color") ||
+    prop === "outline-color" ||
+    prop === "text-decoration-color" ||
+    prop === "caret-color" ||
+    prop === "column-rule-color" ||
+    prop === "flood-color" ||
+    prop === "lighting-color"
+  ) {
+    return "#64748b";
+  }
+  return null;
+}
+
 function copyAllComputedStylesOntoClone(originalEl, cloneEl, originalDoc) {
   const win = originalDoc.defaultView;
   if (!win) return;
@@ -101,8 +118,13 @@ function copyAllComputedStylesOntoClone(originalEl, cloneEl, originalDoc) {
     const pri = cs.getPropertyPriority(prop);
     if (UNSUPPORTED_COLOR_IN_VALUE.test(val)) {
       const resolved = resolveModernColorValue(originalDoc, prop, val);
-      if (resolved === null) continue;
-      val = resolved;
+      if (resolved === null) {
+        const fb = fallbackColorForPdfProp(prop);
+        if (fb === null) continue;
+        val = fb;
+      } else {
+        val = resolved;
+      }
     }
     try {
       cloneEl.style.setProperty(prop, val, pri);
@@ -113,6 +135,15 @@ function copyAllComputedStylesOntoClone(originalEl, cloneEl, originalDoc) {
   cloneEl.style.setProperty("-webkit-print-color-adjust", "exact");
   cloneEl.style.setProperty("print-color-adjust", "exact");
   cloneEl.removeAttribute("class");
+
+  const c = cloneEl.style.color;
+  if (
+    !c ||
+    c === "transparent" ||
+    /^rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)/i.test(c)
+  ) {
+    cloneEl.style.color = "#0f172a";
+  }
 }
 
 /**
@@ -178,25 +209,23 @@ export async function exportDomToPdf(element, filename = "document.pdf") {
 
   let imgData;
   try {
-    outer: for (const scale of scales) {
-      for (const foreignObjectRendering of [false, true]) {
-        try {
-          const canvas = await html2canvas(element, {
-            scale,
-            useCORS: true,
-            allowTaint: false,
-            logging: false,
-            backgroundColor: "#ffffff",
-            windowWidth: w,
-            windowHeight: h,
-            foreignObjectRendering,
-            onclone,
-          });
-          imgData = canvas.toDataURL("image/jpeg", 0.9);
-          break outer;
-        } catch {
-          /* try foreignObject toggle / next scale */
-        }
+    for (const scale of scales) {
+      try {
+        const canvas = await html2canvas(element, {
+          scale,
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+          backgroundColor: "#ffffff",
+          windowWidth: w,
+          windowHeight: h,
+          foreignObjectRendering: false,
+          onclone,
+        });
+        imgData = canvas.toDataURL("image/jpeg", 0.9);
+        break;
+      } catch {
+        /* try next scale */
       }
     }
   } finally {
