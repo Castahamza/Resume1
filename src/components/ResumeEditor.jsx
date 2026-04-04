@@ -3,8 +3,7 @@
 import { useState, useRef, forwardRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
+import { exportDomToPdf } from "@/lib/pdfFromElement";
 import {
   ArrowLeft,
   Plus,
@@ -37,52 +36,6 @@ import {
 } from "@/lib/checkPlan";
 import toast from "react-hot-toast";
 import { LoadingDots } from "@/components/ui/LoadingDots";
-
-/**
- * Renders a DOM node to a multi-page A4 PDF with margins (mm).
- */
-async function buildResumePdf(element) {
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    logging: false,
-    backgroundColor: "#ffffff",
-    windowWidth: element.scrollWidth,
-    windowHeight: element.scrollHeight,
-  });
-
-  const imgData = canvas.toDataURL("image/jpeg", 0.95);
-  const pdf = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: "a4",
-  });
-
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 14;
-  const usableWidth = pageWidth - margin * 2;
-  const usableHeight = pageHeight - margin * 2;
-
-  const imgProps = pdf.getImageProperties(imgData);
-  const imgWidth = usableWidth;
-  const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-
-  let heightLeft = imgHeight;
-  let offsetY = margin;
-
-  pdf.addImage(imgData, "JPEG", margin, offsetY, imgWidth, imgHeight);
-  heightLeft -= usableHeight;
-
-  while (heightLeft > 1) {
-    offsetY = margin - (imgHeight - heightLeft);
-    pdf.addPage();
-    pdf.addImage(imgData, "JPEG", margin, offsetY, imgWidth, imgHeight);
-    heightLeft -= usableHeight;
-  }
-
-  pdf.save("resume.pdf");
-}
 
 function FormSection({ title, icon: Icon, children }) {
   return (
@@ -139,6 +92,7 @@ const ResumePreview = forwardRef(function ResumePreview(
     <div className="min-h-[min(70vh,880px)] rounded-lg border border-slate-200 bg-slate-100/80 p-4 shadow-inner sm:p-6 print:bg-white">
       <div
         ref={ref}
+        data-pdf-print-root
         className="mx-auto max-w-[8.5in] bg-white px-6 py-8 text-slate-900 shadow-none sm:px-10 sm:py-10 print:shadow-none"
       >
         <Template
@@ -538,8 +492,15 @@ export function ResumeEditor({
     }
     setPdfLoading(true);
     try {
-      await buildResumePdf(el);
-      toast.success("PDF downloaded.");
+      const { usedPrintFallback } = await exportDomToPdf(el, "resume.pdf");
+      if (usedPrintFallback) {
+        toast(
+          "Print dialog opened — choose “Save as PDF” or “Microsoft Print to PDF” as the printer.",
+          { duration: 6500 }
+        );
+      } else {
+        toast.success("PDF downloaded.");
+      }
     } catch (err) {
       console.error(err);
       toast.error(

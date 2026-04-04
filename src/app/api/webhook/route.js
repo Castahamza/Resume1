@@ -1,61 +1,18 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createServiceRoleClient } from "@/lib/supabaseAdmin";
+import { syncProfileFromCheckoutSession } from "@/lib/syncStripeCheckoutSession";
 
 export const dynamic = "force-dynamic";
 
 async function handleCheckoutSessionCompleted(admin, session) {
-  const userId =
-    session.metadata?.supabase_user_id || session.client_reference_id;
-
-  if (!userId) {
-    console.warn("checkout.session.completed: missing supabase user id");
-    return;
-  }
-
-  const customerId =
-    typeof session.customer === "string"
-      ? session.customer
-      : session.customer?.id || null;
-
-  const email =
-    session.customer_email ||
-    session.customer_details?.email ||
-    null;
-
-  if (session.mode === "subscription") {
-    const subId =
-      typeof session.subscription === "string"
-        ? session.subscription
-        : session.subscription?.id || null;
-
-    const { error } = await admin.from("profiles").upsert(
-      {
-        id: userId,
-        email,
-        plan: "pro",
-        stripe_customer_id: customerId,
-        stripe_subscription_id: subId,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "id" }
-    );
-
-    if (error) console.error("profiles upsert (pro):", error);
-  } else if (session.mode === "payment") {
-    const { error } = await admin.from("profiles").upsert(
-      {
-        id: userId,
-        email,
-        plan: "lifetime",
-        stripe_customer_id: customerId,
-        stripe_subscription_id: null,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "id" }
-    );
-
-    if (error) console.error("profiles upsert (lifetime):", error);
+  const result = await syncProfileFromCheckoutSession(admin, session);
+  if (!result.ok) {
+    if (result.error === "missing_user") {
+      console.warn("checkout.session.completed: missing supabase user id");
+    } else {
+      console.error("checkout.session.completed sync failed:", result.error);
+    }
   }
 }
 

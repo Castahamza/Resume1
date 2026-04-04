@@ -330,8 +330,18 @@ export default function CoverLetterPage() {
     }
     setPdfLoading(true);
     try {
-      await exportDomToPdf(el, "cover-letter.pdf");
-      toast.success("PDF downloaded.");
+      const { usedPrintFallback } = await exportDomToPdf(
+        el,
+        "cover-letter.pdf"
+      );
+      if (usedPrintFallback) {
+        toast(
+          "Print dialog opened — choose “Save as PDF” or “Microsoft Print to PDF”.",
+          { duration: 6500 }
+        );
+      } else {
+        toast.success("PDF downloaded.");
+      }
     } catch (err) {
       console.error(err);
       toast.error("Could not create PDF. Try again.");
@@ -615,6 +625,7 @@ export default function CoverLetterPage() {
             <div className="overflow-hidden rounded-xl border border-dashed border-slate-200 bg-slate-50/80 p-4">
               <div
                 ref={pdfRef}
+                data-pdf-print-root
                 className="mx-auto min-h-[200px] max-w-[8.5in] bg-white p-8 font-serif text-[13px] leading-relaxed text-slate-900 whitespace-pre-wrap shadow-sm print:shadow-none"
               >
                 {letter.trim() || (

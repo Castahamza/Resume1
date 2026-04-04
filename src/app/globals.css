@@ -49,3 +49,28 @@ html {
 .loading-dot-animate {
   animation: loading-dot 1s ease-in-out infinite;
 }
+
+/* Resume / cover-letter: Save as PDF via browser print when canvas export fails */
+@media print {
+  body {
+    background: #fff !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  [data-pdf-print-root],
+  [data-pdf-print-root] * {
+    visibility: visible;
+  }
+  [data-pdf-print-root] {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #fff !important;
+  }
+}
