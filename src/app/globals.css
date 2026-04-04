@@ -50,8 +50,16 @@ html {
   animation: loading-dot 1s ease-in-out infinite;
 }
 
-/* Resume / cover-letter: Save as PDF via browser print when canvas export fails */
+/* Resume / cover-letter: Save as PDF — only [data-pdf-print-root] prints (native layout). */
 @media print {
+  @page {
+    margin: 12mm;
+    size: A4;
+  }
+  html {
+    background: #fff !important;
+    color-scheme: light !important;
+  }
   body {
     background: #fff !important;
   }
@@ -69,8 +77,12 @@ html {
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
+    padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
     background: #fff !important;
+    color-scheme: light !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }

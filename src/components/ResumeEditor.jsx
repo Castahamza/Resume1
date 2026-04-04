@@ -492,15 +492,11 @@ export function ResumeEditor({
     }
     setPdfLoading(true);
     try {
-      const { usedPrintFallback } = await exportDomToPdf(el, "resume.pdf");
-      if (usedPrintFallback) {
-        toast(
-          "Print dialog opened — choose “Save as PDF” or “Microsoft Print to PDF” as the printer.",
-          { duration: 6500 }
-        );
-      } else {
-        toast.success("PDF downloaded.");
-      }
+      await exportDomToPdf(el, "resume.pdf");
+      toast(
+        "Print dialog opened — choose “Save as PDF” or “Microsoft Print to PDF”, then save your file.",
+        { duration: 7500 }
+      );
     } catch (err) {
       console.error(err);
       toast.error(

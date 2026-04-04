@@ -330,18 +330,11 @@ export default function CoverLetterPage() {
     }
     setPdfLoading(true);
     try {
-      const { usedPrintFallback } = await exportDomToPdf(
-        el,
-        "cover-letter.pdf"
+      await exportDomToPdf(el, "cover-letter.pdf");
+      toast(
+        "Print dialog opened — choose “Save as PDF” or “Microsoft Print to PDF”, then save.",
+        { duration: 7500 }
       );
-      if (usedPrintFallback) {
-        toast(
-          "Print dialog opened — choose “Save as PDF” or “Microsoft Print to PDF”.",
-          { duration: 6500 }
-        );
-      } else {
-        toast.success("PDF downloaded.");
-      }
     } catch (err) {
       console.error(err);
       toast.error("Could not create PDF. Try again.");
@@ -621,7 +614,7 @@ export default function CoverLetterPage() {
               PDF is generated from the formatted preview below (matches your
               text).
             </p>
-            {/* Off-screen printable region for html2canvas */}
+            {/* Printable preview (also used for Save as PDF via browser print) */}
             <div className="overflow-hidden rounded-xl border border-dashed border-slate-200 bg-slate-50/80 p-4">
               <div
                 ref={pdfRef}
