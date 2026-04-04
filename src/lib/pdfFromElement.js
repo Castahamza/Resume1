@@ -108,13 +108,93 @@ function fallbackColorForPdfProp(prop) {
   return null;
 }
 
+/**
+ * Only copy safe longhands. Copying every getComputedStyle key (incl. font shorthand,
+ * transforms, etc.) breaks html2canvas text layout — missing spaces, overlapping lines.
+ */
+const PDF_SAFE_STYLE_PROPS = [
+  "color",
+  "background-color",
+  "font-family",
+  "font-size",
+  "font-weight",
+  "font-style",
+  "line-height",
+  "letter-spacing",
+  "word-spacing",
+  "text-align",
+  "text-transform",
+  "text-decoration",
+  "text-decoration-line",
+  "text-decoration-color",
+  "text-decoration-style",
+  "text-decoration-thickness",
+  "text-indent",
+  "text-shadow",
+  "white-space",
+  "word-break",
+  "overflow-wrap",
+  "vertical-align",
+  "padding-top",
+  "padding-right",
+  "padding-bottom",
+  "padding-left",
+  "margin-top",
+  "margin-right",
+  "margin-bottom",
+  "margin-left",
+  "border-top-width",
+  "border-right-width",
+  "border-bottom-width",
+  "border-left-width",
+  "border-top-style",
+  "border-right-style",
+  "border-bottom-style",
+  "border-left-style",
+  "border-top-color",
+  "border-right-color",
+  "border-bottom-color",
+  "border-left-color",
+  "width",
+  "max-width",
+  "min-width",
+  "height",
+  "min-height",
+  "max-height",
+  "display",
+  "flex-direction",
+  "flex-wrap",
+  "justify-content",
+  "align-items",
+  "align-self",
+  "align-content",
+  "gap",
+  "row-gap",
+  "column-gap",
+  "flex",
+  "flex-grow",
+  "flex-shrink",
+  "flex-basis",
+  "order",
+  "list-style-type",
+  "list-style-position",
+  "box-sizing",
+  "border-radius",
+  "opacity",
+  "visibility",
+  "overflow",
+  "overflow-x",
+  "overflow-y",
+];
+
 function copyAllComputedStylesOntoClone(originalEl, cloneEl, originalDoc) {
   const win = originalDoc.defaultView;
   if (!win) return;
   const cs = win.getComputedStyle(originalEl);
-  for (let i = 0; i < cs.length; i++) {
-    const prop = cs[i];
+
+  for (const prop of PDF_SAFE_STYLE_PROPS) {
     let val = cs.getPropertyValue(prop);
+    if (val === "") continue;
     const pri = cs.getPropertyPriority(prop);
     if (UNSUPPORTED_COLOR_IN_VALUE.test(val)) {
       const resolved = resolveModernColorValue(originalDoc, prop, val);
@@ -129,9 +209,10 @@ function copyAllComputedStylesOntoClone(originalEl, cloneEl, originalDoc) {
     try {
       cloneEl.style.setProperty(prop, val, pri);
     } catch {
-      /* some properties are not settable inline */
+      /* ignore */
     }
   }
+
   cloneEl.style.setProperty("-webkit-print-color-adjust", "exact");
   cloneEl.style.setProperty("print-color-adjust", "exact");
   cloneEl.removeAttribute("class");
