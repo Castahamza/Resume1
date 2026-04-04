@@ -185,7 +185,38 @@ const PDF_SAFE_STYLE_PROPS = [
   "overflow",
   "overflow-x",
   "overflow-y",
+  "font-kerning",
+  "font-variant-ligatures",
 ];
+
+/**
+ * html2canvas + JPEG can make negative letter-spacing / ligatures look like missing
+ * spaces (esp. Tailwind tracking-*). Force safer text metrics on the clone only.
+ */
+function normalizeCanvasTextMetrics(clonedRoot) {
+  const win = clonedRoot.ownerDocument?.defaultView;
+  if (!win) return;
+  function fix(el) {
+    if (el.nodeType !== Node.ELEMENT_NODE) return;
+    const cs = win.getComputedStyle(el);
+    if (cs.letterSpacing && cs.letterSpacing !== "normal") {
+      const n = parseFloat(cs.letterSpacing);
+      if (!Number.isNaN(n) && n < 0) {
+        el.style.letterSpacing = "0px";
+      }
+    }
+    if (cs.wordSpacing && cs.wordSpacing !== "normal") {
+      const n = parseFloat(cs.wordSpacing);
+      if (!Number.isNaN(n) && n < 0) {
+        el.style.wordSpacing = "0px";
+      }
+    }
+    el.style.setProperty("font-kerning", "normal");
+    el.style.setProperty("font-variant-ligatures", "none");
+    for (const c of el.children) fix(c);
+  }
+  fix(clonedRoot);
+}
 
 function copyAllComputedStylesOntoClone(originalEl, cloneEl, originalDoc) {
   const win = originalDoc.defaultView;
@@ -285,6 +316,7 @@ export async function exportDomToPdf(element, filename = "document.pdf") {
     stripAuthorStylesFromClonedDocument(clonedDoc);
     if (clonedRoot) {
       syncCloneStylesFromOriginal(originalDoc, clonedRoot);
+      normalizeCanvasTextMetrics(clonedRoot);
     }
   };
 
@@ -298,12 +330,11 @@ export async function exportDomToPdf(element, filename = "document.pdf") {
           allowTaint: false,
           logging: false,
           backgroundColor: "#ffffff",
-          windowWidth: w,
-          windowHeight: h,
           foreignObjectRendering: false,
           onclone,
         });
-        imgData = canvas.toDataURL("image/jpeg", 0.9);
+        /* PNG avoids JPEG artifacts eating thin gaps between words in some viewers */
+        imgData = canvas.toDataURL("image/png");
         break;
       } catch {
         /* try next scale */
@@ -338,13 +369,13 @@ export async function exportDomToPdf(element, filename = "document.pdf") {
     let heightLeft = imgHeight;
     let offsetY = margin;
 
-    pdf.addImage(imgData, "JPEG", margin, offsetY, imgWidth, imgHeight);
+    pdf.addImage(imgData, "PNG", margin, offsetY, imgWidth, imgHeight);
     heightLeft -= usableHeight;
 
     while (heightLeft > 1) {
       offsetY = margin - (imgHeight - heightLeft);
       pdf.addPage();
-      pdf.addImage(imgData, "JPEG", margin, offsetY, imgWidth, imgHeight);
+      pdf.addImage(imgData, "PNG", margin, offsetY, imgWidth, imgHeight);
       heightLeft -= usableHeight;
     }
 
