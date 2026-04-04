@@ -69,6 +69,8 @@ html {
   [data-pdf-print-root],
   [data-pdf-print-root] * {
     visibility: visible;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   [data-pdf-print-root] {
     position: absolute !important;
@@ -82,7 +84,5 @@ html {
     border: none !important;
     background: #fff !important;
     color-scheme: light !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
   }
 }

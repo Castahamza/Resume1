@@ -14,32 +14,32 @@ export default function CreativeTemplate({
 
   return (
     <article
-      className="relative border-l-[6px] border-violet-600 pl-5 font-sans text-slate-900 antialiased print:border-l-black print:bg-white print:pl-4 print:text-black"
+      className="relative border-l-[6px] border-violet-600 pl-5 font-sans text-slate-900 antialiased print:bg-white print:pl-4"
       itemScope
       itemType="https://schema.org/Person"
     >
-      <header className="border-b border-violet-200 pb-4 print:border-gray-300">
+      <header className="border-b border-violet-200 pb-4">
         <h1
-          className="text-[26px] font-extrabold tracking-tight text-violet-950 print:text-black"
+          className="text-[26px] font-extrabold tracking-tight text-violet-950"
           itemProp="name"
         >
           {personal.fullName.trim() || (
-            <span className="text-violet-400 print:text-gray-500">Your Name</span>
+            <span className="text-violet-400">Your Name</span>
           )}
         </h1>
         {contactParts.length > 0 ? (
-          <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-slate-600 sm:text-sm print:text-black">
+          <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-slate-600 sm:text-sm">
             {contactParts.map((part, i) => (
               <span key={i} className="inline-flex items-center gap-2">
                 {i > 0 ? (
-                  <span className="text-violet-300 print:text-gray-400" aria-hidden="true">
+                  <span className="text-violet-300" aria-hidden="true">
                     •
                   </span>
                 ) : null}
                 {part.startsWith("http") ? (
                   <a
                     href={part}
-                    className="text-teal-700 underline decoration-2 underline-offset-2 print:text-black"
+                    className="text-teal-700 underline decoration-2 underline-offset-2"
                   >
                     LinkedIn
                   </a>
@@ -58,11 +58,11 @@ export default function CreativeTemplate({
         <section className="mt-5 print:break-inside-avoid" aria-labelledby="cre-summary">
           <h2
             id="cre-summary"
-            className="mb-2 inline-block rounded-r-md bg-violet-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-900 print:bg-gray-200 print:text-black"
+            className="mb-2 inline-block rounded-r-md bg-violet-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-900"
           >
             Summary
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap print:text-black">
+          <p className="mt-2 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">
             {personal.summary}
           </p>
         </section>
@@ -78,7 +78,7 @@ export default function CreativeTemplate({
         <section className="mt-5 print:break-inside-avoid" aria-labelledby="cre-exp">
           <h2
             id="cre-exp"
-            className="mb-3 inline-block rounded-r-md bg-teal-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-teal-900 print:bg-gray-200 print:text-black"
+            className="mb-3 inline-block rounded-r-md bg-teal-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-teal-900"
           >
             Experience
           </h2>
@@ -94,27 +94,27 @@ export default function CreativeTemplate({
               return (
                 <li
                   key={exp.id}
-                  className="rounded-lg border border-slate-100 bg-slate-50/80 p-3 print:border-gray-300 print:bg-transparent print:break-inside-avoid"
+                  className="rounded-lg border border-slate-100 bg-slate-50/80 p-3 print:break-inside-avoid"
                 >
                   <div className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:gap-4">
                     <div>
-                      <h3 className="text-sm font-bold text-violet-950 print:text-black">
+                      <h3 className="text-sm font-bold text-violet-950">
                         {exp.company.trim() || "Company"}
                       </h3>
                       {exp.jobTitle.trim() ? (
-                        <p className="text-sm font-medium text-teal-800 print:text-black">
+                        <p className="text-sm font-medium text-teal-800">
                           {exp.jobTitle}
                         </p>
                       ) : null}
                     </div>
                     {exp.dates.trim() ? (
-                      <p className="shrink-0 text-xs font-semibold text-slate-500 sm:text-sm print:text-black">
+                      <p className="shrink-0 text-xs font-semibold text-slate-500 sm:text-sm">
                         {exp.dates}
                       </p>
                     ) : null}
                   </div>
                   {bullets.length > 0 ? (
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700 print:text-black">
+                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
                       {bullets.map((b, i) => (
                         <li key={i}>{b}</li>
                       ))}
@@ -131,7 +131,7 @@ export default function CreativeTemplate({
         <section className="mt-5 print:break-inside-avoid" aria-labelledby="cre-edu">
           <h2
             id="cre-edu"
-            className="mb-3 inline-block rounded-r-md bg-violet-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-900 print:bg-gray-200 print:text-black"
+            className="mb-3 inline-block rounded-r-md bg-violet-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-900"
           >
             Education
           </h2>
@@ -144,15 +144,15 @@ export default function CreativeTemplate({
                   className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:gap-4 print:break-inside-avoid"
                 >
                   <div>
-                    <h3 className="text-sm font-bold text-violet-950 print:text-black">
+                    <h3 className="text-sm font-bold text-violet-950">
                       {ed.school.trim() || "School"}
                     </h3>
                     {ed.degree.trim() ? (
-                      <p className="text-sm text-slate-700 print:text-black">{ed.degree}</p>
+                      <p className="text-sm text-slate-700">{ed.degree}</p>
                     ) : null}
                   </div>
                   {ed.dates.trim() ? (
-                    <p className="shrink-0 text-xs font-semibold text-slate-500 sm:text-sm print:text-black">
+                    <p className="shrink-0 text-xs font-semibold text-slate-500 sm:text-sm">
                       {ed.dates}
                     </p>
                   ) : null}
@@ -167,11 +167,11 @@ export default function CreativeTemplate({
         <section className="mt-5 print:break-inside-avoid" aria-labelledby="cre-skills">
           <h2
             id="cre-skills"
-            className="mb-2 inline-block rounded-r-md bg-teal-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-teal-900 print:bg-gray-200 print:text-black"
+            className="mb-2 inline-block rounded-r-md bg-teal-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-teal-900"
           >
             Skills
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-700 print:text-black">
+          <p className="mt-2 text-sm leading-relaxed text-slate-700">
             {skills.join(" · ")}
           </p>
         </section>
