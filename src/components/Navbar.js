@@ -11,53 +11,112 @@ const navLinks = [
   { href: "/blog", label: "Blog" },
 ];
 
-const aiToolsColumns = [
+const aiMegaSections = [
   {
-    heading: "Resume & ATS",
+    heading: "Resume tools",
+    variant: "links",
     items: [
       {
         href: "/dashboard/resume/new",
-        title: "AI resume editor",
-        description: "Templates, bullets, and AI help while you write.",
+        title: "AI resume builder",
+        description: "Smart resume creation with live preview.",
+        badge: null,
+      },
+      {
+        href: "/dashboard/resume/new",
+        title: "AI resume agent",
+        description: "Guided editing and AI suggestions in one workspace.",
+        badge: "New!",
+      },
+      {
+        href: "/dashboard/resume/new#resume-score-heading",
+        title: "Resume checker",
+        description: "Get instant feedback with your resume score.",
         badge: null,
       },
       {
         href: "/dashboard/keyword-scanner",
-        title: "Keyword scanner",
-        description: "Match your resume to a job description.",
+        title: "Resume keyword scanner",
+        description: "Target your application with keyword matches.",
+        badge: null,
+      },
+      {
+        href: "/dashboard/resume/new#zoru-bullets",
+        title: "Resume bullet point writer",
+        description: "Stronger bullets with one-click AI.",
+        badge: null,
+      },
+      {
+        href: "/dashboard/resume/new#zoru-summary",
+        title: "Resume summary generator",
+        description: "Craft a clear professional summary.",
         badge: null,
       },
     ],
   },
   {
-    heading: "Letters",
+    heading: "Other tools",
+    variant: "links",
     items: [
       {
         href: "/dashboard/cover-letter",
-        title: "Cover letter",
-        description: "Draft and refine a letter for each application.",
+        title: "Cover letter generator",
+        description: "Personalized cover letters for each role.",
         badge: null,
       },
-    ],
-  },
-  {
-    heading: "Explore",
-    items: [
       {
-        href: "/blog",
-        title: "Blog & tips",
-        description: "Ideas for resumes, interviews, and job search.",
+        href: "/dashboard",
+        title: "Resignation letter generator",
+        description: "Leave on good terms — more letter types from the dashboard.",
+        badge: null,
+      },
+      {
+        href: "/dashboard",
+        title: "AI interview practice",
+        description: "Practice sessions — rolling out soon in Zoru.",
+        badge: "New!",
+      },
+      {
+        href: "/dashboard",
+        title: "Job search",
+        description: "Discover and track roles — more coming soon.",
         badge: null,
       },
       {
         href: "/#features",
-        title: "Product tour",
-        description: "See what Zoru includes on one page.",
+        title: "View all tools",
+        description: "See the full Zoru tour on one page.",
         badge: null,
       },
     ],
   },
+  {
+    heading: "User guides",
+    variant: "guides",
+    items: [
+      {
+        href: "/blog",
+        title: "How to tailor a resume to a job posting",
+        description:
+          "Tailor your resume by adding keywords from the job ad — this guide walks you through it.",
+      },
+      {
+        href: "/blog",
+        title: "How to use the resume score",
+        description:
+          "Understand your checklist and what moves the needle on your resume score.",
+      },
+    ],
+  },
 ];
+
+function BadgePill({ children }) {
+  return (
+    <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+      {children}
+    </span>
+  );
+}
 
 function MegaMenuPanel({ onNavigate }) {
   return (
@@ -66,40 +125,74 @@ function MegaMenuPanel({ onNavigate }) {
       role="menu"
       aria-label="AI tools"
     >
-      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-      {aiToolsColumns.map((col) => (
-        <div key={col.heading}>
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            {col.heading}
-          </p>
-          <ul className="space-y-4">
-            {col.items.map((item) => (
-              <li key={item.href}>
+      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+        {aiMegaSections.map((col) => (
+          <div key={col.heading}>
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {col.heading}
+            </p>
+            {col.variant === "guides" ? (
+              <div>
+                <ul className="space-y-4">
+                  {col.items.map((item) => (
+                    <li key={item.title}>
+                      <Link
+                        href={item.href}
+                        role="menuitem"
+                        className="group block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                        onClick={onNavigate}
+                      >
+                        <div
+                          className="mb-2 aspect-[16/10] w-full rounded-lg bg-gradient-to-br from-sky-100 via-white to-violet-100 shadow-inner dark:from-sky-950/80 dark:via-slate-900 dark:to-violet-950/60"
+                          aria-hidden
+                        />
+                        <span className="text-sm font-semibold text-slate-900 transition group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                          {item.title}
+                        </span>
+                        <span className="mt-1 block text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                          {item.description}
+                        </span>
+                        <span className="mt-2 inline-block text-xs font-semibold text-blue-600 dark:text-blue-400">
+                          Continue reading
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
                 <Link
-                  href={item.href}
-                  role="menuitem"
-                  className="group block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                  href="/blog"
+                  className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                   onClick={onNavigate}
                 >
-                  <span className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-900 transition group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
-                      {item.title}
-                    </span>
-                    {item.badge ? (
-                      <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                        {item.badge}
-                      </span>
-                    ) : null}
-                  </span>
-                  <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
-                    {item.description}
-                  </span>
+                  All user guides <span aria-hidden>→</span>
                 </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+              </div>
+            ) : (
+              <ul className="space-y-4">
+                {col.items.map((item) => (
+                  <li key={`${col.heading}-${item.title}`}>
+                    <Link
+                      href={item.href}
+                      role="menuitem"
+                      className="group block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                      onClick={onNavigate}
+                    >
+                      <span className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-semibold text-slate-900 transition group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                          {item.title}
+                        </span>
+                        {item.badge ? <BadgePill>{item.badge}</BadgePill> : null}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
+                        {item.description}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
       </div>
       <div className="mt-6 flex justify-end border-t border-slate-100 pt-4 dark:border-slate-800">
         <Link
@@ -200,7 +293,7 @@ export default function Navbar() {
             </button>
             {megaOpen ? (
               <div
-                className="absolute left-1/2 top-full z-50 w-[min(100vw-2rem,56rem)] -translate-x-1/2 pt-2"
+                className="absolute left-1/2 top-full z-50 w-[min(100vw-2rem,68rem)] -translate-x-1/2 pt-2"
                 onMouseEnter={openMega}
                 onMouseLeave={scheduleClose}
               >
@@ -268,32 +361,76 @@ export default function Navbar() {
             </button>
             {mobileAiOpen ? (
               <div className="ml-1 space-y-4 border-l-2 border-blue-100 py-2 pl-3 dark:border-blue-900/40">
-                {aiToolsColumns.map((col) => (
+                {aiMegaSections.map((col) => (
                   <div key={col.heading}>
                     <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                       {col.heading}
                     </p>
-                    <ul className="space-y-2">
-                      {col.items.map((item) => (
-                        <li key={item.href}>
-                          <Link
-                            href={item.href}
-                            className="block text-sm text-slate-700 dark:text-slate-300"
-                            onClick={() => {
-                              setOpen(false);
-                              setMobileAiOpen(false);
-                            }}
-                          >
-                            <span className="font-medium text-slate-900 dark:text-white">
-                              {item.title}
-                            </span>
-                            <span className="mt-0.5 block text-xs text-slate-500">
-                              {item.description}
-                            </span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
+                    {col.variant === "guides" ? (
+                      <ul className="space-y-3">
+                        {col.items.map((item) => (
+                          <li key={item.title}>
+                            <Link
+                              href={item.href}
+                              className="block rounded-lg border border-slate-100 bg-slate-50/80 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/50"
+                              onClick={() => {
+                                setOpen(false);
+                                setMobileAiOpen(false);
+                              }}
+                            >
+                              <span className="font-medium text-slate-900 dark:text-white">
+                                {item.title}
+                              </span>
+                              <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">
+                                {item.description}
+                              </span>
+                              <span className="mt-2 block text-xs font-semibold text-blue-600 dark:text-blue-400">
+                                Continue reading
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <ul className="space-y-2">
+                        {col.items.map((item) => (
+                          <li key={`${col.heading}-${item.title}`}>
+                            <Link
+                              href={item.href}
+                              className="block text-sm text-slate-700 dark:text-slate-300"
+                              onClick={() => {
+                                setOpen(false);
+                                setMobileAiOpen(false);
+                              }}
+                            >
+                              <span className="flex flex-wrap items-center gap-2">
+                                <span className="font-medium text-slate-900 dark:text-white">
+                                  {item.title}
+                                </span>
+                                {item.badge ? (
+                                  <BadgePill>{item.badge}</BadgePill>
+                                ) : null}
+                              </span>
+                              <span className="mt-0.5 block text-xs text-slate-500">
+                                {item.description}
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {col.variant === "guides" ? (
+                      <Link
+                        href="/blog"
+                        className="mt-2 inline-flex text-xs font-semibold text-blue-600 dark:text-blue-400"
+                        onClick={() => {
+                          setOpen(false);
+                          setMobileAiOpen(false);
+                        }}
+                      >
+                        All user guides →
+                      </Link>
+                    ) : null}
                   </div>
                 ))}
               </div>

@@ -341,7 +341,7 @@ export function ResumeScore({
       <div className="flex items-center justify-between gap-2">
         <h2
           id="resume-score-heading"
-          className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-600"
+          className="scroll-mt-28 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-600"
         >
           <ClipboardCheck className="h-4 w-4 text-blue-600" aria-hidden />
           Resume score

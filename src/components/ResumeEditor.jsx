@@ -37,9 +37,12 @@ import {
 import toast from "react-hot-toast";
 import { LoadingDots } from "@/components/ui/LoadingDots";
 
-function FormSection({ title, icon: Icon, children }) {
+function FormSection({ title, icon: Icon, children, sectionId }) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section
+      id={sectionId}
+      className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 ${sectionId ? "scroll-mt-28" : ""}`}
+    >
       <h2 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500">
         <Icon className="h-4 w-4 text-blue-600" aria-hidden />
         {title}
@@ -199,6 +202,24 @@ export function ResumeEditor({
     if (userPlan == null) return;
     setTemplate((t) => (canUseTemplate(userPlan, t) ? t : FREE_TEMPLATE_ID));
   }, [userPlan]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const id = window.location.hash.replace(/^#/, "");
+    if (!id) return;
+    const scrollToHash = () => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+    const t1 = window.setTimeout(scrollToHash, 120);
+    const t2 = window.setTimeout(scrollToHash, 480);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, []);
 
   const persistResume = useCallback(
     async ({ showToast }) => {
@@ -645,7 +666,7 @@ export function ResumeEditor({
                   placeholder="https://linkedin.com/in/yourprofile"
                 />
               </div>
-              <div className="sm:col-span-2">
+              <div className="scroll-mt-28 sm:col-span-2" id="zoru-summary">
                 <Label htmlFor="summary">Summary</Label>
                 <TextArea
                   id="summary"
@@ -657,7 +678,7 @@ export function ResumeEditor({
             </div>
           </FormSection>
 
-          <FormSection title="Experience" icon={Briefcase}>
+          <FormSection title="Experience" icon={Briefcase} sectionId="zoru-bullets">
             <div className="space-y-6">
               {experiences.map((exp, idx) => (
                 <div
