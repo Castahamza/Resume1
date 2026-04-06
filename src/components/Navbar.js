@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, ChevronDown, FileText } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { getSupabase } from "@/lib/supabase";
 
 const navLinks = [
   { href: "/#features", label: "Features" },
@@ -358,6 +359,7 @@ function MegaMenuPanel({
 }
 
 export default function Navbar() {
+  const [isAuthed, setIsAuthed] = useState(false);
   const [open, setOpen] = useState(false);
   const [aiMegaOpen, setAiMegaOpen] = useState(false);
   const [examplesMegaOpen, setExamplesMegaOpen] = useState(false);
@@ -450,6 +452,19 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    const supabase = getSupabase();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthed(!!session);
+    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthed(!!session);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
     if (!aiMegaOpen && !examplesMegaOpen && !pricingMegaOpen) return;
     function onKey(e) {
       if (e.key === "Escape") {
@@ -486,7 +501,7 @@ export default function Navbar() {
         aria-label="Main"
       >
         <Link
-          href="/"
+          href={isAuthed ? "/dashboard" : "/"}
           className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
         >
           Zoru
@@ -631,18 +646,37 @@ export default function Navbar() {
             ) : null}
           </div>
 
-          <Link
-            href="/login"
-            className="rounded px-2 py-2 text-sm font-medium text-slate-600 transition hover:text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-blue-400"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/signup"
-            className="ml-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          >
-            Get started
-          </Link>
+          {isAuthed ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="rounded px-2 py-2 text-sm font-medium text-slate-600 transition hover:text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-blue-400"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/dashboard/resume/new"
+                className="ml-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+              >
+                New resume
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="rounded px-2 py-2 text-sm font-medium text-slate-600 transition hover:text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-blue-400"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/signup"
+                className="ml-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+              >
+                Get started
+              </Link>
+            </>
+          )}
           <ThemeToggle />
         </div>
 
@@ -901,20 +935,41 @@ export default function Navbar() {
                 {label}
               </Link>
             ))}
-            <Link
-              href="/login"
-              className="py-2 text-sm font-medium text-slate-700 dark:text-slate-300"
-              onClick={() => setOpen(false)}
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/signup"
-              className="mt-1 rounded-lg bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white"
-              onClick={() => setOpen(false)}
-            >
-              Get started
-            </Link>
+            {isAuthed ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="py-2 text-sm font-medium text-slate-700 dark:text-slate-300"
+                  onClick={() => setOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/dashboard/resume/new"
+                  className="mt-1 rounded-lg bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white"
+                  onClick={() => setOpen(false)}
+                >
+                  New resume
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="py-2 text-sm font-medium text-slate-700 dark:text-slate-300"
+                  onClick={() => setOpen(false)}
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="mt-1 rounded-lg bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white"
+                  onClick={() => setOpen(false)}
+                >
+                  Get started
+                </Link>
+              </>
+            )}
           </div>
         </div>
       ) : null}
