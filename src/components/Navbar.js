@@ -7,8 +7,22 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navLinks = [
   { href: "/#features", label: "Features" },
-  { href: "/#pricing", label: "Pricing" },
   { href: "/blog", label: "Blog" },
+];
+
+const pricingDropdownItems = [
+  {
+    href: "/#pricing",
+    title: "Job Seekers",
+    description: "Free to get started, no card required.",
+    badge: null,
+  },
+  {
+    href: "/#pricing",
+    title: "For Organizations & Consultants",
+    description: "Help your job seekers with Zoru for teams.",
+    badge: "New",
+  },
 ];
 
 const aiMegaSections = [
@@ -167,6 +181,49 @@ function BadgePill({ children }) {
   );
 }
 
+function PricingNewBadge({ children }) {
+  return (
+    <span className="rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-800 dark:bg-sky-950 dark:text-sky-300">
+      {children}
+    </span>
+  );
+}
+
+function PricingDropdownPanel({ onNavigate }) {
+  return (
+    <div
+      className="w-[min(100vw-2rem,19.5rem)] rounded-xl border border-slate-200/90 bg-white py-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"
+      role="menu"
+      aria-label="Pricing options"
+    >
+      <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+        {pricingDropdownItems.map((item) => (
+          <li key={item.title}>
+            <Link
+              href={item.href}
+              role="menuitem"
+              className="block px-4 py-3 outline-none transition hover:bg-slate-50 focus-visible:bg-slate-50 dark:hover:bg-slate-800/80 dark:focus-visible:bg-slate-800/80"
+              onClick={onNavigate}
+            >
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                  {item.title}
+                </span>
+                {item.badge ? (
+                  <PricingNewBadge>{item.badge}</PricingNewBadge>
+                ) : null}
+              </span>
+              <span className="mt-0.5 block text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                {item.description}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function MegaMenuPanel({
   sections,
   ariaLabel,
@@ -306,10 +363,14 @@ export default function Navbar() {
   const [examplesMegaOpen, setExamplesMegaOpen] = useState(false);
   const [mobileAiOpen, setMobileAiOpen] = useState(false);
   const [mobileExamplesOpen, setMobileExamplesOpen] = useState(false);
+  const [mobilePricingOpen, setMobilePricingOpen] = useState(false);
+  const [pricingMegaOpen, setPricingMegaOpen] = useState(false);
   const aiLeaveTimer = useRef(null);
   const examplesLeaveTimer = useRef(null);
+  const pricingLeaveTimer = useRef(null);
   const aiMegaWrapRef = useRef(null);
   const examplesMegaWrapRef = useRef(null);
+  const pricingMegaWrapRef = useRef(null);
 
   const clearAiLeave = () => {
     if (aiLeaveTimer.current) {
@@ -338,10 +399,27 @@ export default function Navbar() {
     );
   };
 
+  const clearPricingLeave = () => {
+    if (pricingLeaveTimer.current) {
+      clearTimeout(pricingLeaveTimer.current);
+      pricingLeaveTimer.current = null;
+    }
+  };
+
+  const schedulePricingClose = () => {
+    clearPricingLeave();
+    pricingLeaveTimer.current = setTimeout(
+      () => setPricingMegaOpen(false),
+      120
+    );
+  };
+
   const openAiMega = () => {
     clearAiLeave();
     setExamplesMegaOpen(false);
     clearExamplesLeave();
+    setPricingMegaOpen(false);
+    clearPricingLeave();
     setAiMegaOpen(true);
   };
 
@@ -349,22 +427,35 @@ export default function Navbar() {
     clearExamplesLeave();
     setAiMegaOpen(false);
     clearAiLeave();
+    setPricingMegaOpen(false);
+    clearPricingLeave();
     setExamplesMegaOpen(true);
+  };
+
+  const openPricingMega = () => {
+    clearPricingLeave();
+    setAiMegaOpen(false);
+    clearAiLeave();
+    setExamplesMegaOpen(false);
+    clearExamplesLeave();
+    setPricingMegaOpen(true);
   };
 
   useEffect(() => {
     return () => {
       clearAiLeave();
       clearExamplesLeave();
+      clearPricingLeave();
     };
   }, []);
 
   useEffect(() => {
-    if (!aiMegaOpen && !examplesMegaOpen) return;
+    if (!aiMegaOpen && !examplesMegaOpen && !pricingMegaOpen) return;
     function onKey(e) {
       if (e.key === "Escape") {
         setAiMegaOpen(false);
         setExamplesMegaOpen(false);
+        setPricingMegaOpen(false);
       }
     }
     function onPointerDown(e) {
@@ -373,8 +464,12 @@ export default function Navbar() {
       const inEx =
         examplesMegaWrapRef.current &&
         examplesMegaWrapRef.current.contains(e.target);
+      const inPricing =
+        pricingMegaWrapRef.current &&
+        pricingMegaWrapRef.current.contains(e.target);
       if (!inAi) setAiMegaOpen(false);
       if (!inEx) setExamplesMegaOpen(false);
+      if (!inPricing) setPricingMegaOpen(false);
     }
     document.addEventListener("keydown", onKey);
     document.addEventListener("mousedown", onPointerDown);
@@ -382,7 +477,7 @@ export default function Navbar() {
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("mousedown", onPointerDown);
     };
-  }, [aiMegaOpen, examplesMegaOpen]);
+  }, [aiMegaOpen, examplesMegaOpen, pricingMegaOpen]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90">
@@ -416,6 +511,7 @@ export default function Navbar() {
               onFocus={openAiMega}
               onClick={() => {
                 setExamplesMegaOpen(false);
+                setPricingMegaOpen(false);
                 setAiMegaOpen((v) => !v);
               }}
             >
@@ -458,6 +554,7 @@ export default function Navbar() {
               onFocus={openExamplesMega}
               onClick={() => {
                 setAiMegaOpen(false);
+                setPricingMegaOpen(false);
                 setExamplesMegaOpen((v) => !v);
               }}
             >
@@ -492,6 +589,47 @@ export default function Navbar() {
               {label}
             </Link>
           ))}
+
+          <div
+            ref={pricingMegaWrapRef}
+            className="relative flex items-center"
+            onMouseEnter={openPricingMega}
+            onMouseLeave={schedulePricingClose}
+          >
+            <button
+              type="button"
+              className={`flex items-center gap-0.5 rounded px-2 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
+                pricingMegaOpen
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400"
+              }`}
+              aria-expanded={pricingMegaOpen}
+              aria-haspopup="true"
+              onFocus={openPricingMega}
+              onClick={() => {
+                setAiMegaOpen(false);
+                setExamplesMegaOpen(false);
+                setPricingMegaOpen((v) => !v);
+              }}
+            >
+              Pricing
+              <ChevronDown
+                className={`h-4 w-4 transition ${pricingMegaOpen ? "rotate-180" : ""}`}
+                aria-hidden
+              />
+            </button>
+            {pricingMegaOpen ? (
+              <div
+                className="absolute left-0 top-full z-50 pt-2"
+                onMouseEnter={openPricingMega}
+                onMouseLeave={schedulePricingClose}
+              >
+                <PricingDropdownPanel
+                  onNavigate={() => setPricingMegaOpen(false)}
+                />
+              </div>
+            ) : null}
+          </div>
 
           <Link
             href="/login"
@@ -535,6 +673,7 @@ export default function Navbar() {
               aria-expanded={mobileAiOpen}
               onClick={() => {
                 setMobileExamplesOpen(false);
+                setMobilePricingOpen(false);
                 setMobileAiOpen((v) => !v);
               }}
             >
@@ -626,6 +765,7 @@ export default function Navbar() {
               aria-expanded={mobileExamplesOpen}
               onClick={() => {
                 setMobileAiOpen(false);
+                setMobilePricingOpen(false);
                 setMobileExamplesOpen((v) => !v);
               }}
             >
@@ -704,6 +844,49 @@ export default function Navbar() {
                       </ul>
                     )}
                   </div>
+                ))}
+              </div>
+            ) : null}
+
+            <button
+              type="button"
+              className="flex w-full items-center justify-between py-2 text-left text-sm font-semibold text-slate-800 dark:text-slate-200"
+              aria-expanded={mobilePricingOpen}
+              onClick={() => {
+                setMobileAiOpen(false);
+                setMobileExamplesOpen(false);
+                setMobilePricingOpen((v) => !v);
+              }}
+            >
+              Pricing
+              <ChevronDown
+                className={`h-4 w-4 shrink-0 transition ${mobilePricingOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            {mobilePricingOpen ? (
+              <div className="ml-1 space-y-2 border-l-2 border-blue-100 py-2 pl-3 dark:border-blue-900/40">
+                {pricingDropdownItems.map((item) => (
+                  <Link
+                    key={item.title}
+                    href={item.href}
+                    className="block rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-3 text-sm dark:border-slate-800 dark:bg-slate-900/50"
+                    onClick={() => {
+                      setOpen(false);
+                      setMobilePricingOpen(false);
+                    }}
+                  >
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium text-slate-900 dark:text-white">
+                        {item.title}
+                      </span>
+                      {item.badge ? (
+                        <PricingNewBadge>{item.badge}</PricingNewBadge>
+                      ) : null}
+                    </span>
+                    <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">
+                      {item.description}
+                    </span>
+                  </Link>
                 ))}
               </div>
             ) : null}
