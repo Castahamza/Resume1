@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, FileText } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navLinks = [
@@ -110,6 +110,55 @@ const aiMegaSections = [
   },
 ];
 
+const examplesMegaSections = [
+  {
+    heading: "Resume examples",
+    variant: "links",
+    items: [
+      {
+        href: "/dashboard/resume/new",
+        title: "Resume templates & formats",
+        description: "Explore Zoru’s most-used resume formats and layouts.",
+        badge: null,
+      },
+      {
+        href: "/blog",
+        title: "Resume examples",
+        description: "Get inspired by excellent resumes and ideas for your own.",
+        badge: null,
+      },
+    ],
+  },
+  {
+    heading: "Other examples",
+    variant: "links",
+    items: [
+      {
+        href: "/dashboard/cover-letter",
+        title: "Cover letter examples",
+        description: "Effective cover letter samples.",
+        badge: null,
+      },
+      {
+        href: "/blog",
+        title: "Resignation letter examples",
+        description: "Effective resignation letter samples.",
+        badge: null,
+      },
+    ],
+  },
+  {
+    heading: "Resources",
+    variant: "resource",
+    resource: {
+      href: "/blog",
+      title: "Free Google Docs resume template",
+      description: "How to format a resume the right way!",
+      cta: "Get the template",
+    },
+  },
+];
+
 function BadgePill({ children }) {
   return (
     <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
@@ -118,17 +167,24 @@ function BadgePill({ children }) {
   );
 }
 
-function MegaMenuPanel({ onNavigate }) {
+function MegaMenuPanel({
+  sections,
+  ariaLabel,
+  onNavigate,
+  columnHeadingClassName = "text-slate-500 dark:text-slate-400",
+}) {
   return (
     <div
       className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-xl dark:border-slate-700 dark:bg-slate-900"
       role="menu"
-      aria-label="AI tools"
+      aria-label={ariaLabel}
     >
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-        {aiMegaSections.map((col) => (
+        {sections.map((col) => (
           <div key={col.heading}>
-            <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <p
+              className={`mb-3 text-[11px] font-bold uppercase tracking-wider ${columnHeadingClassName}`}
+            >
               {col.heading}
             </p>
             {col.variant === "guides" ? (
@@ -165,6 +221,43 @@ function MegaMenuPanel({ onNavigate }) {
                   onClick={onNavigate}
                 >
                   All user guides <span aria-hidden>→</span>
+                </Link>
+              </div>
+            ) : col.variant === "resource" && col.resource ? (
+              <div>
+                <Link
+                  href={col.resource.href}
+                  role="menuitem"
+                  className="group block rounded-xl border border-slate-200/90 bg-slate-50/80 p-4 outline-none transition hover:border-blue-200 hover:bg-white dark:border-slate-700 dark:bg-slate-800/60 dark:hover:border-blue-900 dark:hover:bg-slate-800"
+                  onClick={onNavigate}
+                >
+                  <div className="mb-3 flex items-start justify-between gap-2">
+                    <div
+                      className="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-600 dark:bg-slate-900"
+                      aria-hidden
+                    >
+                      <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <span className="shrink-0 rounded bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-900 dark:bg-amber-950 dark:text-amber-200">
+                      Free
+                    </span>
+                  </div>
+                  <span className="text-sm font-semibold text-slate-900 transition group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                    {col.resource.title}
+                  </span>
+                  <span className="mt-1 block text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                    {col.resource.description}
+                  </span>
+                  <span className="mt-3 inline-block text-xs font-semibold text-blue-600 dark:text-blue-400">
+                    {col.resource.cta}
+                  </span>
+                </Link>
+                <Link
+                  href="/blog"
+                  className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                  onClick={onNavigate}
+                >
+                  All blog posts <span aria-hidden>→</span>
                 </Link>
               </div>
             ) : (
@@ -209,41 +302,79 @@ function MegaMenuPanel({ onNavigate }) {
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [megaOpen, setMegaOpen] = useState(false);
+  const [aiMegaOpen, setAiMegaOpen] = useState(false);
+  const [examplesMegaOpen, setExamplesMegaOpen] = useState(false);
   const [mobileAiOpen, setMobileAiOpen] = useState(false);
-  const leaveTimer = useRef(null);
-  const megaWrapRef = useRef(null);
+  const [mobileExamplesOpen, setMobileExamplesOpen] = useState(false);
+  const aiLeaveTimer = useRef(null);
+  const examplesLeaveTimer = useRef(null);
+  const aiMegaWrapRef = useRef(null);
+  const examplesMegaWrapRef = useRef(null);
 
-  const clearLeave = () => {
-    if (leaveTimer.current) {
-      clearTimeout(leaveTimer.current);
-      leaveTimer.current = null;
+  const clearAiLeave = () => {
+    if (aiLeaveTimer.current) {
+      clearTimeout(aiLeaveTimer.current);
+      aiLeaveTimer.current = null;
     }
   };
 
-  const scheduleClose = () => {
-    clearLeave();
-    leaveTimer.current = setTimeout(() => setMegaOpen(false), 120);
+  const clearExamplesLeave = () => {
+    if (examplesLeaveTimer.current) {
+      clearTimeout(examplesLeaveTimer.current);
+      examplesLeaveTimer.current = null;
+    }
   };
 
-  const openMega = () => {
-    clearLeave();
-    setMegaOpen(true);
+  const scheduleAiClose = () => {
+    clearAiLeave();
+    aiLeaveTimer.current = setTimeout(() => setAiMegaOpen(false), 120);
+  };
+
+  const scheduleExamplesClose = () => {
+    clearExamplesLeave();
+    examplesLeaveTimer.current = setTimeout(
+      () => setExamplesMegaOpen(false),
+      120
+    );
+  };
+
+  const openAiMega = () => {
+    clearAiLeave();
+    setExamplesMegaOpen(false);
+    clearExamplesLeave();
+    setAiMegaOpen(true);
+  };
+
+  const openExamplesMega = () => {
+    clearExamplesLeave();
+    setAiMegaOpen(false);
+    clearAiLeave();
+    setExamplesMegaOpen(true);
   };
 
   useEffect(() => {
-    return () => clearLeave();
+    return () => {
+      clearAiLeave();
+      clearExamplesLeave();
+    };
   }, []);
 
   useEffect(() => {
-    if (!megaOpen) return;
+    if (!aiMegaOpen && !examplesMegaOpen) return;
     function onKey(e) {
-      if (e.key === "Escape") setMegaOpen(false);
+      if (e.key === "Escape") {
+        setAiMegaOpen(false);
+        setExamplesMegaOpen(false);
+      }
     }
     function onPointerDown(e) {
-      if (megaWrapRef.current && !megaWrapRef.current.contains(e.target)) {
-        setMegaOpen(false);
-      }
+      const inAi =
+        aiMegaWrapRef.current && aiMegaWrapRef.current.contains(e.target);
+      const inEx =
+        examplesMegaWrapRef.current &&
+        examplesMegaWrapRef.current.contains(e.target);
+      if (!inAi) setAiMegaOpen(false);
+      if (!inEx) setExamplesMegaOpen(false);
     }
     document.addEventListener("keydown", onKey);
     document.addEventListener("mousedown", onPointerDown);
@@ -251,7 +382,7 @@ export default function Navbar() {
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("mousedown", onPointerDown);
     };
-  }, [megaOpen]);
+  }, [aiMegaOpen, examplesMegaOpen]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90">
@@ -268,36 +399,86 @@ export default function Navbar() {
 
         <div className="hidden md:flex md:items-center md:gap-1">
           <div
-            ref={megaWrapRef}
+            ref={aiMegaWrapRef}
             className="relative flex items-center"
-            onMouseEnter={openMega}
-            onMouseLeave={scheduleClose}
+            onMouseEnter={openAiMega}
+            onMouseLeave={scheduleAiClose}
           >
             <button
               type="button"
               className={`flex items-center gap-0.5 rounded px-2 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
-                megaOpen
+                aiMegaOpen
                   ? "text-blue-600 dark:text-blue-400"
                   : "text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400"
               }`}
-              aria-expanded={megaOpen}
+              aria-expanded={aiMegaOpen}
               aria-haspopup="true"
-              onFocus={openMega}
-              onClick={() => setMegaOpen((v) => !v)}
+              onFocus={openAiMega}
+              onClick={() => {
+                setExamplesMegaOpen(false);
+                setAiMegaOpen((v) => !v);
+              }}
             >
               AI tools
               <ChevronDown
-                className={`h-4 w-4 transition ${megaOpen ? "rotate-180" : ""}`}
+                className={`h-4 w-4 transition ${aiMegaOpen ? "rotate-180" : ""}`}
                 aria-hidden
               />
             </button>
-            {megaOpen ? (
+            {aiMegaOpen ? (
               <div
                 className="absolute left-1/2 top-full z-50 w-[min(100vw-2rem,68rem)] -translate-x-1/2 pt-2"
-                onMouseEnter={openMega}
-                onMouseLeave={scheduleClose}
+                onMouseEnter={openAiMega}
+                onMouseLeave={scheduleAiClose}
               >
-                <MegaMenuPanel onNavigate={() => setMegaOpen(false)} />
+                <MegaMenuPanel
+                  sections={aiMegaSections}
+                  ariaLabel="AI tools"
+                  onNavigate={() => setAiMegaOpen(false)}
+                />
+              </div>
+            ) : null}
+          </div>
+
+          <div
+            ref={examplesMegaWrapRef}
+            className="relative flex items-center"
+            onMouseEnter={openExamplesMega}
+            onMouseLeave={scheduleExamplesClose}
+          >
+            <button
+              type="button"
+              className={`flex items-center gap-0.5 rounded px-2 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
+                examplesMegaOpen
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400"
+              }`}
+              aria-expanded={examplesMegaOpen}
+              aria-haspopup="true"
+              onFocus={openExamplesMega}
+              onClick={() => {
+                setAiMegaOpen(false);
+                setExamplesMegaOpen((v) => !v);
+              }}
+            >
+              Examples &amp; templates
+              <ChevronDown
+                className={`h-4 w-4 transition ${examplesMegaOpen ? "rotate-180" : ""}`}
+                aria-hidden
+              />
+            </button>
+            {examplesMegaOpen ? (
+              <div
+                className="absolute left-1/2 top-full z-50 w-[min(100vw-2rem,68rem)] -translate-x-1/2 pt-2"
+                onMouseEnter={openExamplesMega}
+                onMouseLeave={scheduleExamplesClose}
+              >
+                <MegaMenuPanel
+                  sections={examplesMegaSections}
+                  ariaLabel="Examples and templates"
+                  columnHeadingClassName="text-blue-600 dark:text-blue-400"
+                  onNavigate={() => setExamplesMegaOpen(false)}
+                />
               </div>
             ) : null}
           </div>
@@ -352,7 +533,10 @@ export default function Navbar() {
               type="button"
               className="flex w-full items-center justify-between py-2 text-left text-sm font-semibold text-slate-800 dark:text-slate-200"
               aria-expanded={mobileAiOpen}
-              onClick={() => setMobileAiOpen((v) => !v)}
+              onClick={() => {
+                setMobileExamplesOpen(false);
+                setMobileAiOpen((v) => !v);
+              }}
             >
               AI tools
               <ChevronDown
@@ -431,6 +615,94 @@ export default function Navbar() {
                         All user guides →
                       </Link>
                     ) : null}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            <button
+              type="button"
+              className="flex w-full items-center justify-between py-2 text-left text-sm font-semibold text-slate-800 dark:text-slate-200"
+              aria-expanded={mobileExamplesOpen}
+              onClick={() => {
+                setMobileAiOpen(false);
+                setMobileExamplesOpen((v) => !v);
+              }}
+            >
+              Examples &amp; templates
+              <ChevronDown
+                className={`h-4 w-4 shrink-0 transition ${mobileExamplesOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            {mobileExamplesOpen ? (
+              <div className="ml-1 space-y-4 border-l-2 border-blue-100 py-2 pl-3 dark:border-blue-900/40">
+                {examplesMegaSections.map((col) => (
+                  <div key={col.heading}>
+                    <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                      {col.heading}
+                    </p>
+                    {col.variant === "resource" && col.resource ? (
+                      <div>
+                        <Link
+                          href={col.resource.href}
+                          className="block rounded-lg border border-slate-200 bg-slate-50/90 p-3 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                          onClick={() => {
+                            setOpen(false);
+                            setMobileExamplesOpen(false);
+                          }}
+                        >
+                          <div className="mb-2 flex items-start justify-between gap-2">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900">
+                              <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-900 dark:bg-amber-950 dark:text-amber-200">
+                              Free
+                            </span>
+                          </div>
+                          <span className="font-medium text-slate-900 dark:text-white">
+                            {col.resource.title}
+                          </span>
+                          <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">
+                            {col.resource.description}
+                          </span>
+                          <span className="mt-2 block text-xs font-semibold text-blue-600 dark:text-blue-400">
+                            {col.resource.cta}
+                          </span>
+                        </Link>
+                        <Link
+                          href="/blog"
+                          className="mt-2 inline-flex text-xs font-semibold text-blue-600 dark:text-blue-400"
+                          onClick={() => {
+                            setOpen(false);
+                            setMobileExamplesOpen(false);
+                          }}
+                        >
+                          All blog posts →
+                        </Link>
+                      </div>
+                    ) : (
+                      <ul className="space-y-2">
+                        {col.items.map((item) => (
+                          <li key={`${col.heading}-${item.title}`}>
+                            <Link
+                              href={item.href}
+                              className="block text-sm text-slate-700 dark:text-slate-300"
+                              onClick={() => {
+                                setOpen(false);
+                                setMobileExamplesOpen(false);
+                              }}
+                            >
+                              <span className="font-medium text-slate-900 dark:text-white">
+                                {item.title}
+                              </span>
+                              <span className="mt-0.5 block text-xs text-slate-500">
+                                {item.description}
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 ))}
               </div>
