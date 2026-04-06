@@ -130,7 +130,7 @@ const examplesMegaSections = [
     variant: "links",
     items: [
       {
-        href: "/dashboard/resume/new",
+        href: "/templates",
         title: "Resume templates & formats",
         description: "Explore Zoru’s most-used resume formats and layouts.",
         badge: null,
