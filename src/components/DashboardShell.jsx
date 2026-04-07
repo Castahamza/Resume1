@@ -34,7 +34,8 @@ function planBadgeClasses(plan) {
 const shellNav = [
   { kind: "link", href: "/dashboard", label: "My dashboard", icon: LayoutDashboard },
   {
-    kind: "soon",
+    kind: "link",
+    href: "/dashboard/resume/agent",
     label: "AI resume agent",
     icon: Sparkles,
     badge: "New",
@@ -225,7 +226,12 @@ export function DashboardShell({
                 onClick={() => setSidebarOpen(false)}
               >
                 <Icon className="h-4 w-4 shrink-0" aria-hidden />
-                {item.label}
+                <span className="min-w-0 flex-1">{item.label}</span>
+                {item.badge ? (
+                  <span className="shrink-0 rounded bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300">
+                    {item.badge}
+                  </span>
+                ) : null}
               </Link>
             );
           })}

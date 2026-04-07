@@ -35,7 +35,7 @@ const aiMegaSections = [
         badge: null,
       },
       {
-        href: "/dashboard/resume/new",
+        href: "/dashboard/resume/agent",
         title: "AI resume agent",
         description: "Guided editing and AI suggestions in one workspace.",
         badge: "New!",
