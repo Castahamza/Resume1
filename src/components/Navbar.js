@@ -6,10 +6,7 @@ import { Menu, X, ChevronDown, FileText } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { getSupabase } from "@/lib/supabase";
 
-const navLinks = [
-  { href: "/#features", label: "Features" },
-  { href: "/blog", label: "Blog" },
-];
+const navLinks = [{ href: "/blog", label: "Blog" }];
 
 const pricingDropdownItems = [
   {
@@ -178,6 +175,15 @@ function BadgePill({ children }) {
   return (
     <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
       {children}
+    </span>
+  );
+}
+
+/** Green “New!” pill next to AI Tools (Rezi-style nav). */
+function NavNewBadge() {
+  return (
+    <span className="shrink-0 rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold leading-none text-emerald-800 dark:bg-emerald-900/85 dark:text-emerald-200">
+      New!
     </span>
   );
 }
@@ -495,19 +501,26 @@ export default function Navbar() {
   }, [aiMegaOpen, examplesMegaOpen, pricingMegaOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90">
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95">
       <nav
-        className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8"
+        className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8"
         aria-label="Main"
       >
         <Link
           href={isAuthed ? "/dashboard" : "/"}
-          className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
+          className="shrink-0 text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
         >
           Zoru
         </Link>
 
-        <div className="hidden md:flex md:items-center md:gap-1">
+        <div className="hidden min-w-0 flex-1 items-center justify-center md:flex">
+          <div className="flex flex-wrap items-center justify-center gap-x-0.5 gap-y-1 lg:gap-x-1">
+          <Link
+            href="/dashboard/resume/new"
+            className="rounded px-2 py-2 text-sm font-medium text-slate-600 transition hover:text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-blue-400"
+          >
+            AI Resume Builder
+          </Link>
           <div
             ref={aiMegaWrapRef}
             className="relative flex items-center"
@@ -516,7 +529,7 @@ export default function Navbar() {
           >
             <button
               type="button"
-              className={`flex items-center gap-0.5 rounded px-2 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
+              className={`flex items-center gap-1 rounded px-2 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
                 aiMegaOpen
                   ? "text-blue-600 dark:text-blue-400"
                   : "text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400"
@@ -531,8 +544,9 @@ export default function Navbar() {
               }}
             >
               AI tools
+              <NavNewBadge />
               <ChevronDown
-                className={`h-4 w-4 transition ${aiMegaOpen ? "rotate-180" : ""}`}
+                className={`h-4 w-4 shrink-0 transition ${aiMegaOpen ? "rotate-180" : ""}`}
                 aria-hidden
               />
             </button>
@@ -645,7 +659,10 @@ export default function Navbar() {
               </div>
             ) : null}
           </div>
+          </div>
+        </div>
 
+        <div className="hidden shrink-0 items-center gap-1 md:flex">
           {isAuthed ? (
             <>
               <Link
@@ -656,7 +673,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/dashboard/resume/new"
-                className="ml-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-4"
               >
                 New resume
               </Link>
@@ -667,13 +684,13 @@ export default function Navbar() {
                 href="/login"
                 className="rounded px-2 py-2 text-sm font-medium text-slate-600 transition hover:text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-blue-400"
               >
-                Sign in
+                Log in
               </Link>
               <Link
                 href="/signup"
-                className="ml-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                className="whitespace-nowrap rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-4"
               >
-                Get started
+                Create free resume
               </Link>
             </>
           )}
@@ -701,9 +718,16 @@ export default function Navbar() {
           className="border-t border-slate-200 bg-white px-4 py-4 md:hidden dark:border-slate-800 dark:bg-slate-950"
         >
           <div className="flex flex-col gap-1">
+            <Link
+              href="/dashboard/resume/new"
+              className="py-2 text-sm font-semibold text-slate-800 dark:text-slate-200"
+              onClick={() => setOpen(false)}
+            >
+              AI Resume Builder
+            </Link>
             <button
               type="button"
-              className="flex w-full items-center justify-between py-2 text-left text-sm font-semibold text-slate-800 dark:text-slate-200"
+              className="flex w-full items-center justify-between gap-2 py-2 text-left text-sm font-semibold text-slate-800 dark:text-slate-200"
               aria-expanded={mobileAiOpen}
               onClick={() => {
                 setMobileExamplesOpen(false);
@@ -711,7 +735,10 @@ export default function Navbar() {
                 setMobileAiOpen((v) => !v);
               }}
             >
-              AI tools
+              <span className="flex items-center gap-2">
+                AI tools
+                <NavNewBadge />
+              </span>
               <ChevronDown
                 className={`h-4 w-4 shrink-0 transition ${mobileAiOpen ? "rotate-180" : ""}`}
               />
@@ -959,14 +986,14 @@ export default function Navbar() {
                   className="py-2 text-sm font-medium text-slate-700 dark:text-slate-300"
                   onClick={() => setOpen(false)}
                 >
-                  Sign in
+                  Log in
                 </Link>
                 <Link
                   href="/signup"
                   className="mt-1 rounded-lg bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white"
                   onClick={() => setOpen(false)}
                 >
-                  Get started
+                  Create free resume
                 </Link>
               </>
             )}
