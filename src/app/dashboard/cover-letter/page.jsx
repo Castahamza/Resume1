@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   Briefcase,
   Building2,
   FileText,
@@ -12,16 +11,21 @@ import {
   Sparkles,
   Save,
   Download,
-  ScrollText,
 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
+import { DashboardShell } from "@/components/DashboardShell";
+import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
 import { buildResumeContextForPrompt } from "@/lib/resumePromptContext";
 import { exportDomToPdf } from "@/lib/pdfFromElement";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { EmptyCoverLettersIllustration } from "@/components/illustrations/EmptyStates";
 import { LoadingDots } from "@/components/ui/LoadingDots";
-import { FullPageLoader } from "@/components/skeletons/DashboardSkeleton";
 import toast from "react-hot-toast";
+import {
+  isPaidPlan,
+  FREE_MAX_RESUMES,
+  FREE_MONTHLY_AI_LIMIT,
+} from "@/lib/checkPlan";
 
 export default function CoverLetterPage() {
   const router = useRouter();
@@ -29,6 +33,7 @@ export default function CoverLetterPage() {
 
   const [authLoading, setAuthLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [plan, setPlan] = useState("free");
 
   const [resumes, setResumes] = useState([]);
   const [resumesLoading, setResumesLoading] = useState(true);
@@ -52,9 +57,10 @@ export default function CoverLetterPage() {
   const [upgradeMessage, setUpgradeMessage] = useState("");
 
   useEffect(() => {
+    const supabase = getSupabase();
     let mounted = true;
-    async function auth() {
-      const supabase = getSupabase();
+
+    async function load() {
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -64,11 +70,31 @@ export default function CoverLetterPage() {
         return;
       }
       setUser(session.user);
-      setAuthLoading(false);
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("plan")
+        .eq("id", session.user.id)
+        .maybeSingle();
+      if (mounted) setPlan(profile?.plan ?? "free");
+      if (mounted) setAuthLoading(false);
     }
-    auth();
+
+    load();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      if (!session) {
+        router.replace("/login");
+        return;
+      }
+      setUser(session.user);
+    });
+
     return () => {
       mounted = false;
+      subscription.unsubscribe();
     };
   }, [router]);
 
@@ -355,37 +381,52 @@ export default function CoverLetterPage() {
     }
   }
 
+  async function handleLogout() {
+    const supabase = getSupabase();
+    await supabase.auth.signOut();
+    router.replace("/login");
+    router.refresh();
+  }
+
+  function handleNewResumeClick(e) {
+    if (!isPaidPlan(plan) && resumes.length >= FREE_MAX_RESUMES) {
+      e.preventDefault();
+      setUpgradeMessage(
+        `Free accounts include ${FREE_MAX_RESUMES} resume. Upgrade for unlimited resumes.`
+      );
+      setUpgradeOpen(true);
+    }
+  }
+
   if (authLoading || !user) {
-    return <FullPageLoader label="Loading cover letter workspace…" />;
+    return <DashboardSkeleton />;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/40 via-white to-slate-50">
+    <DashboardShell
+      user={user}
+      plan={plan}
+      headerTitle="Cover letter"
+      onLogout={handleLogout}
+      onNewResumeClick={handleNewResumeClick}
+      usageSummary={{
+        resumeCount: resumes.length,
+        resumeLimit: isPaidPlan(plan) ? null : FREE_MAX_RESUMES,
+        aiUsed: 0,
+        aiLimit: isPaidPlan(plan) ? 0 : FREE_MONTHLY_AI_LIMIT,
+      }}
+      showUpgradeButton={!isPaidPlan(plan)}
+      onUpgradeClick={() => {
+        window.location.href = "/#pricing";
+      }}
+    >
       <UpgradeModal
         open={upgradeOpen}
         onClose={() => setUpgradeOpen(false)}
         title="AI generation limit"
         message={upgradeMessage}
       />
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            >
-              <ArrowLeft className="h-4 w-4" aria-hidden />
-              Dashboard
-            </Link>
-            <span className="hidden h-4 w-px bg-slate-200 sm:block" />
-            <div className="flex items-center gap-2 text-slate-900">
-              <ScrollText className="h-5 w-5 text-blue-600" aria-hidden />
-              <h1 className="text-lg font-bold">Cover letter</h1>
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <div className="min-h-full bg-gradient-to-b from-blue-50/40 via-white to-slate-50">
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         <p className="text-sm text-slate-600">
           Generate a tailored letter from one of your saved resumes and the job
@@ -629,6 +670,7 @@ export default function CoverLetterPage() {
           </div>
         </div>
       </main>
-    </div>
+      </div>
+    </DashboardShell>
   );
 }
