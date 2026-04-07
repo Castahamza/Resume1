@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FooterSocialIcons } from "@/components/FooterSocialIcons";
 
 const columns = [
   {
@@ -66,21 +67,11 @@ export default function Footer() {
             ))}
           </div>
         </div>
-        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-slate-800 pt-8 sm:flex-row sm:items-center">
+        <div className="mt-12 flex flex-col items-start justify-between gap-6 border-t border-slate-800 pt-8 sm:flex-row sm:items-center">
           <p className="text-sm text-slate-500">
             © 2026 Zoru. All rights reserved.
           </p>
-          <div className="flex gap-4 text-sm text-slate-500" aria-label="Social">
-            <a href="#" className="hover:text-white">
-              Twitter
-            </a>
-            <a href="#" className="hover:text-white">
-              LinkedIn
-            </a>
-            <a href="#" className="hover:text-white">
-              GitHub
-            </a>
-          </div>
+          <FooterSocialIcons />
         </div>
       </div>
     </footer>
