@@ -16,7 +16,7 @@ export function DashboardDesignControl({
   onAccentChange,
   onMenuToggle,
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   function toggle() {
     const next = !open;
