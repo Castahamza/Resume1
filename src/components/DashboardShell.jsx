@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -18,7 +18,13 @@ import {
   Plus,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { DashboardDesignControl } from "@/components/DashboardDesignControl";
 import { planBadgeLabel } from "@/lib/checkPlan";
+import {
+  getDashboardAccentById,
+  readStoredDashboardAccentId,
+  writeStoredDashboardAccentId,
+} from "@/lib/dashboardAccent";
 import toast from "react-hot-toast";
 
 function planBadgeClasses(plan) {
@@ -84,6 +90,18 @@ export function DashboardShell({
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
+  const [accentId, setAccentId] = useState("sky");
+
+  useEffect(() => {
+    setAccentId(readStoredDashboardAccentId());
+  }, []);
+
+  const accent = getDashboardAccentById(accentId);
+
+  function handleAccentChange(id) {
+    setAccentId(id);
+    writeStoredDashboardAccentId(id);
+  }
 
   async function handleLogout() {
     setLogoutLoading(true);
@@ -131,10 +149,19 @@ export function DashboardShell({
       ) : null}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-[#30363d] bg-[#161b22] transition-transform duration-200 ease-out md:relative md:z-0 md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col overflow-hidden border-r border-[#30363d] bg-[#161b22] transition-transform duration-200 ease-out md:relative md:z-0 md:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-44"
+          style={{
+            background: `linear-gradient(to top, ${accent.sidebarGlow}, transparent)`,
+          }}
+          aria-hidden
+        />
+
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col">
         <div className="flex h-14 items-center justify-between gap-2 border-b border-[#30363d] px-3">
           <Link
             href="/"
@@ -162,7 +189,17 @@ export function DashboardShell({
               onNewResumeClick?.(e);
               setSidebarOpen(false);
             }}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-sky-500 py-3 text-xs font-bold uppercase tracking-wide text-white shadow-lg shadow-sky-900/30 transition hover:bg-sky-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = accent.ctaBgHover;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = accent.ctaBg;
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-lg py-3 text-xs font-bold uppercase tracking-wide text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+            style={{
+              backgroundColor: accent.ctaBg,
+              boxShadow: accent.ctaShadow,
+            }}
           >
             <Plus className="h-4 w-4 shrink-0" aria-hidden />
             Create new resume
@@ -220,8 +257,17 @@ export function DashboardShell({
                 href={item.href}
                 className={
                   active
-                    ? "flex items-center gap-3 rounded-lg bg-sky-500/15 px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-sky-300 ring-1 ring-sky-500/30"
+                    ? "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide"
                     : "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400 transition hover:bg-white/5 hover:text-slate-200"
+                }
+                style={
+                  active
+                    ? {
+                        backgroundColor: accent.navActiveBg,
+                        color: accent.navActiveText,
+                        boxShadow: `0 0 0 1px ${accent.navActiveRing}`,
+                      }
+                    : undefined
                 }
                 onClick={() => setSidebarOpen(false)}
               >
@@ -237,6 +283,11 @@ export function DashboardShell({
           })}
         </nav>
 
+        <DashboardDesignControl
+          accentId={accentId}
+          onAccentChange={handleAccentChange}
+        />
+
         {usageSummary ? (
           <div className="border-t border-[#30363d] px-3 py-3 space-y-3">
             <div>
@@ -251,8 +302,11 @@ export function DashboardShell({
               </div>
               <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[#30363d]">
                 <div
-                  className="h-full rounded-full bg-sky-500 transition-all"
-                  style={{ width: `${resumePct}%` }}
+                  className="h-full rounded-full transition-all"
+                  style={{
+                    width: `${resumePct}%`,
+                    backgroundColor: accent.resumeBar,
+                  }}
                 />
               </div>
             </div>
@@ -280,7 +334,12 @@ export function DashboardShell({
             <button
               type="button"
               onClick={onUpgradeClick}
-              className="flex w-full items-center justify-center rounded-lg border border-sky-500/50 bg-sky-500/10 py-2.5 text-xs font-bold uppercase tracking-wide text-sky-300 transition hover:bg-sky-500/20"
+              className="flex w-full items-center justify-center rounded-lg border py-2.5 text-xs font-bold uppercase tracking-wide transition hover:brightness-110"
+              style={{
+                borderColor: accent.upgradeBorder,
+                backgroundColor: accent.upgradeBg,
+                color: accent.upgradeText,
+              }}
             >
               Upgrade
             </button>
@@ -298,6 +357,7 @@ export function DashboardShell({
             )}
             Logout
           </button>
+        </div>
         </div>
       </aside>
 
