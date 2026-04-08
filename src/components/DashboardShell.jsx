@@ -8,6 +8,7 @@ import {
   Sparkles,
   MessageCircle,
   Briefcase,
+  Library,
   Mail,
   ScanSearch,
   Settings,
@@ -53,6 +54,12 @@ const shellNav = [
     badge: "New",
   },
   { kind: "soon", label: "Job search", icon: Briefcase },
+  {
+    kind: "link",
+    href: "/templates",
+    label: "Sample library",
+    icon: Library,
+  },
   { kind: "link", href: "/dashboard/cover-letter", label: "Cover letters", icon: Mail },
   {
     kind: "link",
