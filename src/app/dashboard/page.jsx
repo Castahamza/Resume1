@@ -3,7 +3,17 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, LayoutGrid, Loader2, Trash2 } from "lucide-react";
+import {
+  Plus,
+  LayoutGrid,
+  List,
+  Loader2,
+  Trash2,
+  Sparkles,
+  Briefcase,
+  MessageCircle,
+  ChevronDown,
+} from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 import { ResumeThumbnail } from "@/components/templates/ResumeThumbnail";
 import { getTemplateLabel } from "@/components/templates";
@@ -22,6 +32,42 @@ import {
 import { EmptyResumeIllustration } from "@/components/illustrations/EmptyStates";
 import toast from "react-hot-toast";
 
+const DOC_TABS = [
+  { id: "resumes", label: "Resumes" },
+  { id: "cover-letters", label: "Cover Letters" },
+  { id: "resignation", label: "Resignation Letters" },
+];
+
+const FEATURE_CARDS = [
+  {
+    icon: Sparkles,
+    title: "AI Resume Agent",
+    desc: "Our most powerful AI resume tool",
+    href: "/dashboard/resume/agent",
+    accent: "#8b5cf6",
+  },
+  {
+    icon: Briefcase,
+    title: "Job Search",
+    desc: "+2M jobs sourced from career pages",
+    href: null,
+    accent: "#0ea5e9",
+  },
+  {
+    icon: MessageCircle,
+    title: "AI Interview",
+    desc: "A new way to practice interviewing",
+    href: null,
+    accent: "#10b981",
+  },
+];
+
+const SORT_OPTIONS = [
+  { id: "updated", label: "Updated" },
+  { id: "created", label: "Created" },
+  { id: "name", label: "Name" },
+];
+
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
@@ -33,6 +79,9 @@ export default function DashboardPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [docPickerOpen, setDocPickerOpen] = useState(false);
+  const [docTab, setDocTab] = useState("resumes");
+  const [sortBy, setSortBy] = useState("created");
+  const [viewMode, setViewMode] = useState("grid");
 
   useEffect(() => {
     const supabase = getSupabase();
@@ -231,6 +280,16 @@ export default function DashboardPage() {
   const pickerFirstName =
     user.user_metadata?.full_name?.trim()?.split?.(/\s+/)?.[0] || "";
 
+  const sortedResumes = [...resumes].sort((a, b) => {
+    if (sortBy === "name") {
+      return (a.title || "").localeCompare(b.title || "");
+    }
+    if (sortBy === "created") {
+      return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    }
+    return new Date(b.updated_at || 0) - new Date(a.updated_at || 0);
+  });
+
   return (
     <DashboardShell
       user={user}
@@ -267,149 +326,294 @@ export default function DashboardPage() {
             : ""
         }
       >
-      <main className="flex-1 px-4 py-8 sm:px-6 lg:px-10 text-slate-200">
-        <div className="mx-auto max-w-5xl">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-                Welcome back, {displayName}
-              </h1>
-              <p className="mt-2 text-sm text-slate-400 sm:text-base">
-                <span className="font-medium text-slate-300">
-                  Signed in as
-                </span>{" "}
-                <span className="rounded-md bg-[#21262d] px-2 py-0.5 font-mono text-sm text-slate-200">
-                  {user.email}
-                </span>
-              </p>
-            </div>
-            {atResumeLimit ? (
-              <button
-                type="button"
-                onClick={() => setUpgradeOpen(true)}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:shrink-0"
-              >
-                <Plus className="h-4 w-4" aria-hidden />
-                Create New Resume
-              </button>
-            ) : (
-              <Link
-                href="/dashboard/resume/new"
-                onClick={handleCreateClick}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:shrink-0"
-              >
-                <Plus className="h-4 w-4" aria-hidden />
-                Create New Resume
-              </Link>
-            )}
+      <main className="flex-1 text-slate-200">
+        {/* ─── Top tabs bar ─── */}
+        <div className="border-b border-[#30363d] bg-[#161b22]/60 px-4 sm:px-6 lg:px-10">
+          <div className="mx-auto flex max-w-6xl items-center justify-between">
+            <nav className="flex gap-0" aria-label="Document type">
+              {DOC_TABS.map((t) => {
+                const active = docTab === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => {
+                      if (t.id === "cover-letters") {
+                        router.push("/dashboard/cover-letter");
+                      } else if (t.id === "resignation") {
+                        toast("Resignation letters are coming soon.", {
+                          icon: "📄",
+                        });
+                      } else {
+                        setDocTab(t.id);
+                      }
+                    }}
+                    className={`relative px-4 py-3 text-[11px] font-bold uppercase tracking-wider transition ${
+                      active
+                        ? "text-white"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    {t.label}
+                    {active ? (
+                      <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-sky-500" />
+                    ) : null}
+                  </button>
+                );
+              })}
+            </nav>
           </div>
+        </div>
 
-          <section className="mt-10" aria-labelledby="resumes-heading">
-            <div className="mb-4 flex items-center gap-2">
-              <LayoutGrid
-                className="h-5 w-5 text-slate-500"
-                aria-hidden
-              />
-              <h2
-                id="resumes-heading"
-                className="text-lg font-semibold text-white"
-              >
-                Your resumes
-              </h2>
-            </div>
-
-            {resumesError ? (
-              <p
-                className="rounded-lg bg-red-950/50 px-4 py-3 text-sm text-red-200 ring-1 ring-red-900/60"
-                role="alert"
-              >
-                {resumesError}
-              </p>
-            ) : null}
-
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {resumesLoading ? (
-                <div className="col-span-full space-y-4">
-                  <p className="flex items-center gap-2 text-sm font-medium text-slate-400">
-                    <Loader2
-                      className="h-4 w-4 shrink-0 animate-spin text-sky-400"
-                      aria-hidden
-                    />
-                    Loading your resumes…
-                  </p>
-                  <ResumeListSkeleton count={6} />
-                </div>
-              ) : resumes.length === 0 ? (
-                <div className="col-span-full flex min-h-[280px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#30363d] bg-[#161b22] px-6 py-12 text-center shadow-inner">
-                  <EmptyResumeIllustration />
-                  <p className="mt-6 text-lg font-semibold text-white">
-                    No resumes yet
-                  </p>
-                  <p className="mt-2 max-w-md text-sm text-slate-400">
-                    Create your first ATS-friendly resume with AI-assisted
-                    bullets, templates, and PDF export.
-                  </p>
-                  <Link
-                    href="/dashboard/resume/new"
-                    onClick={handleCreateClick}
-                    className="mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+        <div className="px-4 py-6 sm:px-6 lg:px-10">
+          <div className="mx-auto max-w-6xl">
+            {/* ─── Feature promo cards ─── */}
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {FEATURE_CARDS.map((card) => {
+                const Icon = card.icon;
+                const Wrapper = card.href ? Link : "button";
+                const wrapperProps = card.href
+                  ? { href: card.href }
+                  : {
+                      type: "button",
+                      onClick: () =>
+                        toast("Coming soon.", { icon: "✨" }),
+                    };
+                return (
+                  <Wrapper
+                    key={card.title}
+                    {...wrapperProps}
+                    className="flex items-center gap-4 rounded-xl border border-[#30363d] bg-[#161b22] px-4 py-4 text-left transition hover:border-slate-500 hover:bg-[#1c2129]"
                   >
-                    <Plus className="h-4 w-4" aria-hidden />
-                    Create your first resume
-                  </Link>
-                </div>
-              ) : (
-                resumes.map((r) => (
-                  <Link
-                    key={r.id}
-                    href={`/dashboard/resume/${r.id}`}
-                    className="group relative flex flex-col rounded-2xl border border-[#30363d] bg-[#161b22] p-4 text-left shadow-sm transition hover:border-sky-500/40 hover:shadow-lg sm:p-5"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="line-clamp-2 pr-8 font-semibold text-white">
-                        {r.title || "Untitled resume"}
-                      </h3>
-                      <button
-                        type="button"
-                        onClick={(e) => handleDeleteResume(e, r.id)}
-                        disabled={deletingId === r.id}
-                        className="absolute right-3 top-3 rounded-lg p-2 text-slate-500 transition hover:bg-red-950/50 hover:text-red-400 disabled:opacity-50"
-                        aria-label={`Delete ${r.title || "resume"}`}
-                      >
-                        {deletingId === r.id ? (
-                          <Loader2
-                            className="h-4 w-4 animate-spin"
-                            aria-hidden
-                          />
-                        ) : (
-                          <Trash2 className="h-4 w-4" aria-hidden />
-                        )}
-                      </button>
-                    </div>
-                    <div className="mt-3">
-                      <ResumeThumbnail
-                        template={r.template}
-                        content={r.content}
+                    <div
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+                      style={{ backgroundColor: `${card.accent}22` }}
+                    >
+                      <Icon
+                        className="h-5 w-5"
+                        style={{ color: card.accent }}
+                        aria-hidden
                       />
                     </div>
-                    <p className="mt-2 text-xs font-semibold text-slate-300">
-                      {getTemplateLabel(r.template)} template
-                    </p>
-                    <p className="mt-3 text-sm text-slate-400">
-                      <span className="font-medium text-slate-300">
-                        Last updated
-                      </span>
-                      <br />
-                      {formatResumeDate(r.updated_at)}
-                    </p>
-                    <span className="mt-3 text-xs font-semibold text-sky-400 group-hover:text-sky-300">
-                      Edit →
-                    </span>
-                  </Link>
-                ))
-              )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-white">
+                        {card.title}
+                      </p>
+                      <p className="mt-0.5 text-xs text-slate-400">
+                        {card.desc}
+                      </p>
+                    </div>
+                  </Wrapper>
+                );
+              })}
             </div>
-          </section>
+
+            {/* ─── Resumes section ─── */}
+            <section
+              className="mt-8 rounded-2xl border border-[#30363d] bg-[#161b22]"
+              aria-labelledby="resumes-heading"
+            >
+              <div className="flex flex-col gap-3 border-b border-[#30363d] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <h2
+                  id="resumes-heading"
+                  className="text-base font-semibold text-white"
+                >
+                  Resumes
+                </h2>
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="appearance-none rounded-lg border border-[#30363d] bg-[#21262d] py-1.5 pl-3 pr-8 text-[11px] font-bold uppercase tracking-wide text-slate-300 outline-none focus:border-sky-500"
+                    >
+                      {SORT_OPTIONS.map((o) => (
+                        <option key={o.id} value={o.id}>
+                          {o.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown
+                      className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500"
+                      aria-hidden
+                    />
+                  </div>
+                  <div className="flex rounded-lg border border-[#30363d] bg-[#21262d]">
+                    <button
+                      type="button"
+                      onClick={() => setViewMode("grid")}
+                      className={`rounded-l-lg p-1.5 transition ${
+                        viewMode === "grid"
+                          ? "bg-sky-500/20 text-sky-400"
+                          : "text-slate-500 hover:text-slate-300"
+                      }`}
+                      aria-label="Grid view"
+                    >
+                      <LayoutGrid className="h-4 w-4" aria-hidden />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewMode("list")}
+                      className={`rounded-r-lg p-1.5 transition ${
+                        viewMode === "list"
+                          ? "bg-sky-500/20 text-sky-400"
+                          : "text-slate-500 hover:text-slate-300"
+                      }`}
+                      aria-label="List view"
+                    >
+                      <List className="h-4 w-4" aria-hidden />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5">
+                {resumesError ? (
+                  <p
+                    className="rounded-lg bg-red-950/50 px-4 py-3 text-sm text-red-200 ring-1 ring-red-900/60"
+                    role="alert"
+                  >
+                    {resumesError}
+                  </p>
+                ) : null}
+
+                {resumesLoading ? (
+                  <div className="space-y-4">
+                    <p className="flex items-center gap-2 text-sm font-medium text-slate-400">
+                      <Loader2
+                        className="h-4 w-4 shrink-0 animate-spin text-sky-400"
+                        aria-hidden
+                      />
+                      Loading your resumes…
+                    </p>
+                    <ResumeListSkeleton count={6} />
+                  </div>
+                ) : viewMode === "grid" ? (
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {/* Create new resume card */}
+                    <Link
+                      href="/dashboard/resume/new"
+                      onClick={handleCreateClick}
+                      className="flex min-h-[220px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#30363d] bg-transparent p-6 text-center transition hover:border-sky-500/40 hover:bg-sky-500/5"
+                    >
+                      <Plus className="h-8 w-8 text-slate-500" aria-hidden />
+                      <span className="mt-3 text-sm font-medium text-slate-400">
+                        Create new resume
+                      </span>
+                    </Link>
+
+                    {sortedResumes.map((r) => (
+                      <Link
+                        key={r.id}
+                        href={`/dashboard/resume/${r.id}`}
+                        className="group relative flex min-h-[220px] flex-col rounded-xl border border-[#30363d] bg-[#0d1117] p-4 text-left transition hover:border-sky-500/40 hover:shadow-lg"
+                      >
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteResume(e, r.id)}
+                          disabled={deletingId === r.id}
+                          className="absolute right-2 top-2 z-10 rounded-lg p-1.5 text-slate-500 transition hover:bg-red-950/50 hover:text-red-400 disabled:opacity-50"
+                          aria-label={`Delete ${r.title || "resume"}`}
+                        >
+                          {deletingId === r.id ? (
+                            <Loader2
+                              className="h-3.5 w-3.5 animate-spin"
+                              aria-hidden
+                            />
+                          ) : (
+                            <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                          )}
+                        </button>
+                        <div className="flex-1">
+                          <ResumeThumbnail
+                            template={r.template}
+                            content={r.content}
+                          />
+                        </div>
+                        <div className="mt-3 border-t border-[#30363d] pt-3">
+                          <p className="truncate text-sm font-semibold text-white">
+                            {r.title || "Untitled resume"}
+                          </p>
+                          <p className="mt-1 text-[10px] uppercase tracking-wide text-slate-500">
+                            {getTemplateLabel(r.template)} ·{" "}
+                            {formatResumeDate(r.updated_at)}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  /* ─── List view ─── */
+                  <div className="divide-y divide-[#30363d]">
+                    <Link
+                      href="/dashboard/resume/new"
+                      onClick={handleCreateClick}
+                      className="flex items-center gap-4 rounded-lg px-3 py-3 transition hover:bg-white/5"
+                    >
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border-2 border-dashed border-[#30363d]">
+                        <Plus className="h-5 w-5 text-slate-500" aria-hidden />
+                      </div>
+                      <span className="text-sm font-medium text-slate-400">
+                        Create new resume
+                      </span>
+                    </Link>
+                    {sortedResumes.map((r) => (
+                      <Link
+                        key={r.id}
+                        href={`/dashboard/resume/${r.id}`}
+                        className="group flex items-center gap-4 rounded-lg px-3 py-3 transition hover:bg-white/5"
+                      >
+                        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-[#30363d] bg-[#0d1117]">
+                          <ResumeThumbnail
+                            template={r.template}
+                            content={r.content}
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-semibold text-white">
+                            {r.title || "Untitled resume"}
+                          </p>
+                          <p className="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">
+                            {getTemplateLabel(r.template)} ·{" "}
+                            {formatResumeDate(r.updated_at)}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteResume(e, r.id)}
+                          disabled={deletingId === r.id}
+                          className="shrink-0 rounded-lg p-2 text-slate-500 transition hover:bg-red-950/50 hover:text-red-400 disabled:opacity-50"
+                          aria-label={`Delete ${r.title || "resume"}`}
+                        >
+                          {deletingId === r.id ? (
+                            <Loader2
+                              className="h-4 w-4 animate-spin"
+                              aria-hidden
+                            />
+                          ) : (
+                            <Trash2 className="h-4 w-4" aria-hidden />
+                          )}
+                        </button>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+
+                {!resumesLoading && resumes.length === 0 ? (
+                  <div className="flex min-h-[200px] flex-col items-center justify-center py-10 text-center">
+                    <EmptyResumeIllustration />
+                    <p className="mt-6 text-lg font-semibold text-white">
+                      No resumes yet
+                    </p>
+                    <p className="mt-2 max-w-md text-sm text-slate-400">
+                      Create your first ATS-friendly resume with AI-assisted
+                      bullets, templates, and PDF export.
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            </section>
+          </div>
         </div>
       </main>
       </div>
