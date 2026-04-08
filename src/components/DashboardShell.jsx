@@ -56,7 +56,7 @@ const shellNav = [
   { kind: "soon", label: "Job search", icon: Briefcase },
   {
     kind: "link",
-    href: "/templates",
+    href: "/dashboard/sample-library",
     label: "Sample library",
     icon: Library,
   },
